@@ -1,5 +1,6 @@
 from src.network_module.NetworkGUI import NetworkGUI
-from src.menu.menu import Menu
+from src.state_module.StateGUI import StateGUI
+from src.file_load_controller import FileLoadController
 import nmcli
 from customtkinter import CTk, CTkButton
 
@@ -9,10 +10,13 @@ class MainApp:
         self.current_screen = ''
         
         self.network_screen = NetworkGUI(self.gui_app)
-        self.menu_screen = Menu(self.gui_app)
+        self.state_screen = StateGUI(self.gui_app)
+        
+        self.file_controller = FileLoadController()
+
 
         if self.isConnected():
-            self.current_screen = 'menu'
+            self.current_screen = 'state'
         else:
             self.current_screen = 'network'
 
@@ -28,11 +32,11 @@ class MainApp:
 
     def check_connection(self):
         if self.current_screen == 'network' and self.isConnected():
-            self.current_screen = 'menu'
+            self.current_screen = 'state'
             for widget in self.gui_app.winfo_children():
                 widget.pack_forget()
-            self.menu_screen.update()
-        elif self.current_screen == 'menu' and not self.isConnected():
+            self.state_screen.update()
+        elif self.current_screen == 'state' and not self.isConnected():
             self.current_screen = 'network'
             for widget in self.gui_app.winfo_children():
                 widget.pack_forget()
@@ -40,8 +44,8 @@ class MainApp:
         self.gui_app.after(5000, self.check_connection)
 
     def update_Screen(self):
-        if self.current_screen == 'menu':
-            self.menu_screen.update()
+        if self.current_screen == 'state':
+            self.state_screen.update()
         elif self.current_screen == 'network':
             self.network_screen.update()
         self.check_connection()

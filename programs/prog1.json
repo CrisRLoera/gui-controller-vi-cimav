@@ -1,0 +1,36 @@
+{
+	"number": 1,
+	"name": "Standar",
+	"steps": [ 
+		{ 
+			"type": "SET",
+			"output1": 1,
+			"output2": 0,
+			"output3": 0
+		},
+		{
+			"type": "SOAK",
+			"time": 30
+		},
+		{
+			"type": "SET",
+			"output1": 0,
+			"output2": 0,
+			"output3": 0
+		},
+		{
+			"type": "SOAK",
+			"time": 30
+		},
+		{
+			"type": "JUMP",
+			"step": 1,
+			"times": 10
+		},
+		{
+			"type": "END",
+			"action": "PowerOFF"
+		}
+	
+	]
+}
