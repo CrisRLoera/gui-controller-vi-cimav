@@ -4,9 +4,9 @@
 	"steps": [ 
 		{ 
 			"type": "SET",
-			"output1": 1,
-			"output2": 0,
-			"output3": 0
+			"output1": true,
+			"output2": false,
+			"output3": false
 		},
 		{
 			"type": "SOAK",
@@ -14,9 +14,9 @@
 		},
 		{
 			"type": "SET",
-			"output1": 0,
-			"output2": 0,
-			"output3": 0
+			"output1": false,
+			"output2": false,
+			"output3": false
 		},
 		{
 			"type": "SOAK",
@@ -29,8 +29,10 @@
 		},
 		{
 			"type": "END",
-			"action": "PowerOFF"
+			"action": "PowerOFF",
+			"program": null
 		}
 	
-	]
+	],
+	"file_name": "prog2.json"
 }

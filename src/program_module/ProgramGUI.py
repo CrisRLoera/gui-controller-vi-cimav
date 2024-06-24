@@ -1,14 +1,16 @@
 from customtkinter import CTkLabel, CTkButton, CTkOptionMenu
 
 class ProgramGUI:
-    def __init__(self,app,host,state):
+    def __init__(self,app,host,state,editor):
         self.host = host
         self.state = state
+        self.editor = editor
         self.menu = CTkLabel(app,text="Programas")
         self.program_selector_gui = CTkOptionMenu(app, command=self.setSelection)
         self.program_selector_gui.set("")
         self.setProgramsList()
         self.load_program_gui = CTkButton(app,text="Load",command=self.update_program)
+        self.edit_program_gui = CTkButton(app,text="Edit",command=self.mv_to_edit)
         self.cancel_program_gui = CTkButton(app,text='Cancel', command=self.cancel)
         self.selected = None
         self.flag_unselected = CTkLabel(app, text="Select a program to load")
@@ -17,6 +19,7 @@ class ProgramGUI:
         self.menu.pack()
         self.program_selector_gui.pack()
         self.load_program_gui.pack()
+        self.edit_program_gui.pack()
         self.cancel_program_gui.pack()
         if self.selected != None:
             self.flag_unselected.pack_forget()
@@ -26,6 +29,14 @@ class ProgramGUI:
     def setSelection(self, choice):
         self.selected = choice
         self.update()
+
+    def mv_to_edit(self):
+        if self.selected != None:
+            self.editor.program = self.host.file_controller.getProgram(self.selected)
+            self.editor.loadProgram()
+            self.host.current_screen = 'editor'
+            self.host.update_Screen()
+
 
 
     def update_program(self):
