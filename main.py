@@ -3,7 +3,8 @@ from src.state_module.StateGUI import StateGUI
 from src.program_module.ProgramGUI import ProgramGUI
 from src.file_load_controller import FileLoadController
 import nmcli
-from customtkinter import CTk, CTkButton
+from customtkinter import CTk, CTkLabel, CTkButton
+import datetime
 
 class MainApp:
     def __init__(self):
@@ -16,6 +17,11 @@ class MainApp:
         self.state_screen = StateGUI(self.gui_app,self)
         self.program_screen = ProgramGUI(self.gui_app,self,self.state_screen)
         
+
+        self.wifi_status_icon = '󰖪'
+        self.current_time = datetime.datetime.now()
+        self.time_hub = CTkLabel(self.gui_app,text=f"{self.current_time}")
+        self.wifi_status_hub = CTkLabel(self.gui_app,text=f'{self.wifi_status_icon}')
 
 
         if self.isConnected():
@@ -30,7 +36,11 @@ class MainApp:
         for dev in dev_list:
             if dev.state == 'connected' and dev.device_type == 'wifi':
                 print("Connect")
+                self.wifi_status_icon = '󰖩'
+                self.update_hub()
                 return True
+        self.wifi_status_icon = '󰖪'
+        self.update_hub()
         return False
 
     def check_connection(self):
@@ -46,9 +56,10 @@ class MainApp:
 
     def update_Screen(self):
         self.refresh_main_screen()
+        self.wifi_status_hub.pack()
+        self.time_hub.pack()
         if self.current_screen == 'state':
             self.state_screen.update()
-            print("Hi")
         elif self.current_screen == 'network':
             self.network_screen.update()
         elif self.current_screen == 'program':
@@ -60,6 +71,11 @@ class MainApp:
     def refresh_main_screen(self):
         for widget in self.gui_app.winfo_children():
             widget.pack_forget()
+
+    def update_hub(self):
+        self.current_time = datetime.datetime.now()
+        self.wifi_status_hub.configure(text=self.wifi_status_icon)
+        self.time_hub.configure(text=self.current_time)
 
 if __name__ == "__main__":
     main = MainApp()

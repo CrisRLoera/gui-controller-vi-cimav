@@ -24,8 +24,8 @@ class FileLoadController:
 
         return programs_list
 
-    def getProgram(self,num):
+    def getProgram(self,name):
         for program in self.programs_list:
-            if num == program['number']:
+            if name == program['name']:
                 return program
 
