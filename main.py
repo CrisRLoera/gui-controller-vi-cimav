@@ -3,6 +3,7 @@ from src.state_module.StateGUI import StateGUI
 from src.program_module.ProgramGUI import ProgramGUI
 from src.edit_module.EditorGUI import EditorGUI
 from src.file_load_controller import FileLoadController
+from src.RecoveryController import RecoveryController
 import nmcli
 from customtkinter import CTk, CTkLabel, CTkButton
 import datetime
@@ -13,6 +14,7 @@ class MainApp:
         self.current_screen = ''
         
         self.file_controller = FileLoadController()
+        self.recovery_controller = RecoveryController(self)
 
         self.network_screen = NetworkGUI(self.gui_app)
         self.state_screen = StateGUI(self.gui_app,self)
@@ -30,7 +32,8 @@ class MainApp:
             self.current_screen = 'state'
         else:
             self.current_screen = 'network'
-
+        
+        self.recovery_controller.checkRecovery()
 
     def isConnected(self):
         nmcli.disable_use_sudo()
@@ -56,6 +59,13 @@ class MainApp:
             self.network_screen.update()
         self.gui_app.after(5000, self.check_connection)
 
+    def check_time(self):
+        if self.state_screen.program_state:
+            self.current_time = datetime.datetime.now()
+            #print(self.current_time)
+            self.recovery_controller.checkClock(self.current_time)
+        self.gui_app.after(1000, self.check_time)
+
     def update_Screen(self):
         self.refresh_main_screen()
         self.wifi_status_hub.pack()
@@ -69,6 +79,7 @@ class MainApp:
         elif self.current_screen == 'editor':
             self.editor_screen.update()
         self.check_connection()
+        self.check_time()
         self.gui_app.mainloop()
 
     def refresh_main_screen(self):
@@ -76,7 +87,6 @@ class MainApp:
             widget.pack_forget()
 
     def update_hub(self):
-        self.current_time = datetime.datetime.now()
         self.wifi_status_hub.configure(text=self.wifi_status_icon)
         self.time_hub.configure(text=self.current_time)
 

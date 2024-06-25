@@ -11,7 +11,13 @@ class StateGUI:
         self.program_number = self.current_program['number']
         self.program_name = self.current_program['name']
         self.program_steps = self.current_program['steps']
-        self.program_jumps_left = 0
+        self.program_jumps_left = None
+
+        self.output_state1 = False
+        self.output_state2 = False
+        self.output_state3 = False
+
+        self.time_left = None
 
         self.program_state_gui = CTkLabel(app, text=f'State: {self.program_state}')
         self.name_gui = CTkLabel(app, text=f"Program name: {self.program_name}")
@@ -50,6 +56,7 @@ class StateGUI:
         else:
             self.program_state = True
             self.update()
+            self.host.recovery_controller.gen_recovery_file()
 
 #    def updateStateData(self):
 
@@ -61,12 +68,14 @@ class StateGUI:
     def changeCurrentProgram(self):
         self.program_steps = self.current_program['steps']
         if self.current_program['steps'] != None:
-            self.current_step = self.current_program['steps'][0]
-            print(type(self.program_steps))
-            self.current_step_number = self.program_steps.index(self.current_step)
+            if self.current_step_number != None:
+                self.current_step = self.current_program['steps'][self.current_step_number]
+            else:
+                self.current_step = self.current_program['steps'][0]
+                self.current_step_number = self.program_steps.index(self.current_step)
         self.program_state = False
         self.program_number = self.current_program['number']
         self.program_name = self.current_program['name']
-        if self.current_step['type']=='JUMP':
+        if self.current_step['type']=='JUMP' and self.program_jumps_left == None:
             self.program_jumps_left = self.current_step['times']
             
