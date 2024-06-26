@@ -1,4 +1,4 @@
-from customtkinter import CTkLabel, CTkButton
+from customtkinter import CTkLabel, CTkButton, CTkEntry
 
 class StateGUI:
     def __init__(self,app,host):
@@ -24,19 +24,34 @@ class StateGUI:
         self.number_gui = CTkLabel(app, text=f"Program number: {self.program_number}")
         self.current_step_gui = CTkLabel(app, text=f"Current step: {self.current_step_number}")
         self.jumpls_left_gui = CTkLabel(app)
-        
+
+        self.out1_label = CTkLabel(app)
+        self.out2_label = CTkLabel(app)
+        self.out3_label = CTkLabel(app)
+
         self.run_program_button_gui = CTkButton(app, command=self.run_current_program)
         self.selec_program_button_gui = CTkButton(app, text='Program', command=self.changeProgramScreen)
+        self.test = CTkEntry(app)
+
+        self.err_no_current_program = False
+        self.err_no_crnt_prg_text = CTkLabel(app, text='Error: No current program to run')
+
 
     def update(self):
         self.title.pack()
         self.name_gui.configure(text=f'Program name: {self.program_name}')
         self.number_gui.configure(text=f'Program number: {self.program_number}')
         self.current_step_gui.configure(text=f'Current step: {self.current_step_number}')
+        self.out1_label.configure(text=f'Output1: {'ON'if self.output_state1 else 'OFF'}')
+        self.out2_label.configure(text=f'Output2: {'ON'if self.output_state2 else 'OFF'}')
+        self.out3_label.configure(text=f'Output3: {'ON'if self.output_state3 else 'OFF'}')
         self.program_state_gui.pack()
         self.name_gui.pack()
         self.number_gui.pack()
         self.current_step_gui.pack()
+        self.out1_label.pack()
+        self.out2_label.pack()
+        self.out3_label.pack()
 
         self.program_state_gui.configure(text=f'State: {'Running'if self.program_state else 'Stop'}')
         self.run_program_button_gui.configure(text='Stop'if self.program_state else 'Run')
@@ -46,10 +61,18 @@ class StateGUI:
             self.selec_program_button_gui.pack()
         else:
             self.selec_program_button_gui.pack_forget()
+        if self.err_no_current_program:
+            self.err_no_crnt_prg_text.pack()
+        else:
+            self.err_no_crnt_prg_text.pack_forget()
         print(self.program_state)
 
     def run_current_program(self):
-        print("Press")
+        if self.current_program == {'number': None, 'name': None, 'steps': None}:
+            self.err_no_current_program = True
+            self.update()
+            return 0
+        self.err_no_current_program = False
         if self.program_state == True:
             self.program_state = False
             self.update()
@@ -59,6 +82,11 @@ class StateGUI:
             self.host.recovery_controller.gen_recovery_file()
 
 #    def updateStateData(self):
+
+    def changeOutputs(self,out1,out2,out3):
+        self.output_state1 = out1
+        self.output_state2 = out2
+        self.output_state3 = out3
 
 
     def changeProgramScreen(self):

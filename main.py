@@ -1,5 +1,6 @@
 from src.network_module.NetworkGUI import NetworkGUI
 from src.state_module.StateGUI import StateGUI
+from src.state_module.StateController import ControlFlow
 from src.program_module.ProgramGUI import ProgramGUI
 from src.edit_module.EditorGUI import EditorGUI
 from src.file_load_controller import FileLoadController
@@ -18,6 +19,7 @@ class MainApp:
 
         self.network_screen = NetworkGUI(self.gui_app)
         self.state_screen = StateGUI(self.gui_app,self)
+        self.state_controller = ControlFlow(self)
         self.editor_screen = EditorGUI(self.gui_app,self)
         self.program_screen = ProgramGUI(self.gui_app,self,self.state_screen,self.editor_screen)
         
@@ -33,7 +35,7 @@ class MainApp:
         else:
             self.current_screen = 'network'
         
-        self.recovery_controller.checkRecovery()
+        #self.recovery_controller.checkRecovery()
 
     def isConnected(self):
         nmcli.disable_use_sudo()
@@ -61,9 +63,11 @@ class MainApp:
 
     def check_time(self):
         if self.state_screen.program_state:
-            self.current_time = datetime.datetime.now()
             #print(self.current_time)
             self.recovery_controller.checkClock(self.current_time)
+            self.state_controller.checkCurrentFlow(self.state_screen.current_step_number)
+        self.current_time = datetime.datetime.now()
+        self.update_hub()
         self.gui_app.after(1000, self.check_time)
 
     def update_Screen(self):

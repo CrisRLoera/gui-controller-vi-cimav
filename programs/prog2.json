@@ -10,7 +10,7 @@
 		},
 		{
 			"type": "SOAK",
-			"time": 30
+			"time": 1
 		},
 		{
 			"type": "SET",
@@ -20,12 +20,12 @@
 		},
 		{
 			"type": "SOAK",
-			"time": 30
+			"time": 1
 		},
 		{
 			"type": "JUMP",
 			"step": 1,
-			"times": 10
+			"times": 2
 		},
 		{
 			"type": "END",

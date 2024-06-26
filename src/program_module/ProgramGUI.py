@@ -16,6 +16,7 @@ class ProgramGUI:
         self.flag_unselected = CTkLabel(app, text="Select a program to load")
 
     def update(self):
+        self.setProgramsList()
         self.menu.pack()
         self.program_selector_gui.pack()
         self.load_program_gui.pack()
@@ -31,6 +32,7 @@ class ProgramGUI:
         self.update()
 
     def mv_to_edit(self):
+        self.program_selector_gui.set("")
         if self.selected != None:
             self.editor.program = self.host.file_controller.getProgram(self.selected)
             self.editor.loadProgram()

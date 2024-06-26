@@ -11,7 +11,7 @@ class RecoveryController:
         self.get_recovery_file()
         lastime = datetime.datetime.strptime(self.file['date'], "%Y-%m-%d %H:%M:%S")
         current_time = datetime.datetime.now()
-        print((current_time-lastime).total_seconds())
+        #print((current_time-lastime).total_seconds())
         self.gen_recovery_file()
 
     def gen_recovery_file(self):
@@ -28,8 +28,8 @@ class RecoveryController:
                     "last program": self.host.state_screen.program_name,
                     "last step": self.host.state_screen.current_step_number
             }
-            json.dump(schema,file)
-            print(schema)
+            json.dump(schema,file, indent=8)
+            #print(schema)
 
     def get_recovery_file(self):
         with open('./recovery.json', 'r') as file:

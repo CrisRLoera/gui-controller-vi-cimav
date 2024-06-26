@@ -29,3 +29,24 @@ class FileLoadController:
             if name == program['name']:
                 return program
 
+    def getProgramByNum(self,name):
+        for program in self.programs_list:
+            if name == program['number']:
+                return program
+
+    def diffName(self,num,name):
+        for program in self.programs_list:
+            if program['number']==num:
+                pass
+            else:
+                if program['name']==name:
+                    return False
+        return True
+
+    def saveProgram(self,num,schema):
+        prog = self.getProgramByNum(num)
+        programs_path = '../programs/'+prog['file_name']
+        base_path = os.path.abspath(os.path.dirname(__file__))
+        path = os.path.join(base_path, programs_path)
+        with open (path,'w') as file:
+            json.dump(schema,file, indent=8)

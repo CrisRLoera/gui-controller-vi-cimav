@@ -1,38 +1,37 @@
 {
-	"number": 1,
-	"name": "Standar",
-	"steps": [ 
-		{ 
-			"type": "SET",
-			"output1": true,
-			"output2": false,
-			"output3": false
-		},
-		{
-			"type": "SOAK",
-			"time": 30
-		},
-		{
-			"type": "SET",
-			"output1": false,
-			"output2": false,
-			"output3": false
-		},
-		{
-			"type": "SOAK",
-			"time": 30
-		},
-		{
-			"type": "JUMP",
-			"step": 1,
-			"times": 10
-		},
-		{
-			"type": "END",
-			"action": "PowerOFF",
-			"program": null
-		}
-	
-	],
-	"file_name": "prog1.json"
+        "number": 1,
+        "name": "Standar1",
+        "steps": [
+                {
+                        "type": "SET",
+                        "output1": true,
+                        "output2": true,
+                        "output3": true
+                },
+                {
+                        "type": "SOAK",
+                        "time": 30
+                },
+                {
+                        "type": "SET",
+                        "output1": false,
+                        "output2": false,
+                        "output3": false
+                },
+                {
+                        "type": "SOAK",
+                        "time": 30
+                },
+                {
+                        "type": "JUMP",
+                        "step": 1,
+                        "times": 10
+                },
+                {
+                        "type": "END",
+                        "action": "PowerOFF",
+                        "program": null
+                }
+        ],
+        "file_name": "prog1.json"
 }

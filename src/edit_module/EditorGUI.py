@@ -6,12 +6,16 @@ class EditorGUI:
         self.program = None
         self.steps_list = None
         self.name_gui = CTkLabel(app,text='Program Name: ')
+        self.number = None
         self.name_entry_gui = CTkEntry(app)
         self.host = host
         self.current_step = 0
         self.current_type = None
         self.types = ["SET","SOAK","JUMP","END"]
         self.end_options = ["PowerOFF","Restart","SwitchProgram"]
+
+        self.err_name = False
+        self.err_name_exist = CTkLabel(app, text="Error: Program name already exist")
 
         self.type_selector = CTkOptionMenu(app,values=self.types, command=self.select_type)
         self.type_selector.set(self.types[0])
@@ -26,6 +30,8 @@ class EditorGUI:
 
         self.soak_entry = CTkEntry(app)
 
+        self.jump_err1 = False
+        self.err_jump_previus_n_al = CTkLabel(app, text="Error: Step selection not allowed, the current step has to be larger than the selected step")
         self.jump_times = CTkEntry(app)
         self.jump_step = CTkEntry(app)
         
@@ -34,6 +40,8 @@ class EditorGUI:
 
         self.next_step_button = CTkButton(app,text="Next", command=self.next_step)
         self.back_step_button = CTkButton(app,text="Back", command=self.back_step)
+        self.save_button = CTkButton(app,text="Save Program", command=self.save_program)
+        self.cancel_button = CTkButton(app,text="Cancel Edition", command=self.cancel_edition)
 
     def update(self):
         self.title.pack()
@@ -50,7 +58,12 @@ class EditorGUI:
             self.showEND()
         self.next_step_button.pack()
         self.back_step_button.pack()
-       
+        self.save_button.pack()
+        self.cancel_button.pack()
+        if self.err_name:
+            self.err_name_exist.pack()
+        else:
+            self.err_name_exist.pack_forget()
 
     def back_step(self):
         old_step = self.current_step
@@ -70,6 +83,33 @@ class EditorGUI:
             self.current_type = self.steps_list[self.current_step]['type']
             self.refresh()
             print(self.current_step)
+
+    def save_program(self):
+        print(self.number)
+        print(self.name_entry_gui.get())
+        self.oldStep(self.current_step)
+        program={""}
+        if self.host.file_controller.diffName(self.number,self.name_entry_gui.get()):
+            self.program['name']=self.name_entry_gui.get()
+            self.program['steps']=self.steps_list
+            self.host.file_controller.saveProgram(self.program['number'],self.program)
+            print(self.program)
+            self.program = None
+            self.steps_list = None
+            self.number = None
+            self.current_step = 0
+            self.current_type = None
+            self.host.program_screen.selected = None
+            self.host.current_screen = 'program'
+            self.host.update_Screen()
+            self.err_name = False
+        else:
+            self.err_name = True
+            self.update()
+        
+    def cancel_edition(self):
+        self.host.current_screen = 'program'
+        self.host.update_Screen()
 
     def select_type(self,choice):
         self.current_type = choice
@@ -101,6 +141,7 @@ class EditorGUI:
         self.oldStep(self.current_step)
             # Posible bug por funcion oldStep
         self.host.update_Screen()
+
     def refresh(self):
         self.loadStepConf()
         self.host.update_Screen()
@@ -119,7 +160,11 @@ class EditorGUI:
             self.steps_list[old]['time']=int(self.soak_entry.get())
         elif self.current_type == 'JUMP':
             self.steps_list[old]['type']='JUMP'
-            self.steps_list[old]['step']=int(self.jump_step.get())
+            if int(self.jump_step.get())>self.current_step:
+                self.jump_err1 = True
+            else:
+                self.steps_list[old]['step']=int(self.jump_step.get())
+                self.jump_err1 = False
             self.steps_list[old]['times']=int(self.jump_times.get())
         elif self.current_type == 'END':
             self.steps_list[old]['type']='END'
@@ -157,7 +202,9 @@ class EditorGUI:
 
     def loadProgram(self):
         if self.program != None:
+            self.name_entry_gui.configure(textvariable=StringVar(value=''))
             self.name_entry_gui.insert(0,self.program['name'])
+            self.number = self.program['number']
         if self.program['steps']!=None:
             self.steps_list = self.program['steps']
             self.type_selector.set(self.steps_list[0]['type'])
@@ -175,6 +222,10 @@ class EditorGUI:
     def showJUMP(self):
         self.jump_times.pack()
         self.jump_step.pack()
+        if self.jump_err1:
+            self.err_jump_previus_n_al.pack()
+        else:
+            self.err_jump_previus_n_al.pack_forget()
 
     def showEND(self):
         self.end_options_gui.pack()
@@ -184,3 +235,4 @@ class EditorGUI:
             self.end_switch_prog.pack()
         else:
             self.end_switch_prog.pack_forget()
+        
