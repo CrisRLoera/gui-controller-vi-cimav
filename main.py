@@ -35,7 +35,7 @@ class MainApp:
         else:
             self.current_screen = 'network'
         
-        #self.recovery_controller.checkRecovery()
+        self.recovery_controller.checkRecovery()
 
     def isConnected(self):
         nmcli.disable_use_sudo()
@@ -66,6 +66,7 @@ class MainApp:
             #print(self.current_time)
             self.recovery_controller.checkClock(self.current_time)
             self.state_controller.checkCurrentFlow(self.state_screen.current_step_number)
+            self.state_screen.update()
         self.current_time = datetime.datetime.now()
         self.update_hub()
         self.gui_app.after(1000, self.check_time)

@@ -26,14 +26,36 @@ class RecoveryController:
                     "jumps": self.host.state_screen.program_jumps_left,
                     "time left": self.host.state_screen.time_left,
                     "last program": self.host.state_screen.program_name,
-                    "last step": self.host.state_screen.current_step_number
+                    "last step": self.host.state_screen.current_step_number,
+                    "task num":self.host.state_controller.task_num,
+                    "stack":self.host.state_controller.stack_save
             }
             json.dump(schema,file, indent=8)
-            #print(schema)
-
+            print(schema)
+    def gen_empty_recovery_file(self):
+        current_time = datetime.datetime.now()
+        with open('./recovery.json', 'w') as file:
+            schema = {
+                    "compleated": True,
+                    "date": str(datetime.datetime.now().replace(microsecond=0)),
+                    "output1": self.host.state_screen.output_state1,
+                    "output2": self.host.state_screen.output_state2,
+                    "output3": self.host.state_screen.output_state3,
+                    "jumps": self.host.state_screen.program_jumps_left,
+                    "time left": self.host.state_screen.time_left,
+                    "last program": self.host.state_screen.program_name,
+                    "last step": self.host.state_screen.current_step_number,
+                    "task num":self.host.state_controller.task_num,
+                    "stack":self.host.state_controller.stack_save
+            }
+            json.dump(schema,file, indent=8)
+        self.get_recovery_file()
     def get_recovery_file(self):
-        with open('./recovery.json', 'r') as file:
-            self.file = json.load(file)
+        try:
+            with open('./recovery.json', 'r') as file:
+                self.file = json.load(file)
+        except FileNotFoundError:
+            self.gen_empty_recovery_file()
 
     def checkRecovery(self):
         limit_for_recovery = 5
@@ -54,6 +76,7 @@ class RecoveryController:
     
                     self.host.state_screen.program_jumps_left = self.file['jumps']
                     self.host.state_screen.time_left = self.file['time left']
-    
+                    self.host.state_controller.task_num = self.file['task num']
+                    self.host.state_controller.recoverTask(self.file['stack'])
                     self.host.state_screen.changeCurrentProgram()
                     self.host.state_screen.run_current_program()

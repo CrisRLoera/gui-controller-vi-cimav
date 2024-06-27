@@ -12,6 +12,7 @@ class StateGUI:
         self.program_name = self.current_program['name']
         self.program_steps = self.current_program['steps']
         self.program_jumps_left = None
+        self.soak_time_left = None
 
         self.output_state1 = False
         self.output_state2 = False
@@ -23,7 +24,8 @@ class StateGUI:
         self.name_gui = CTkLabel(app, text=f"Program name: {self.program_name}")
         self.number_gui = CTkLabel(app, text=f"Program number: {self.program_number}")
         self.current_step_gui = CTkLabel(app, text=f"Current step: {self.current_step_number}")
-        self.jumpls_left_gui = CTkLabel(app)
+        self.jumps_left_gui = CTkLabel(app)
+        self.soak_time_left_gui = CTkLabel(app)
 
         self.out1_label = CTkLabel(app)
         self.out2_label = CTkLabel(app)
@@ -42,6 +44,16 @@ class StateGUI:
         self.name_gui.configure(text=f'Program name: {self.program_name}')
         self.number_gui.configure(text=f'Program number: {self.program_number}')
         self.current_step_gui.configure(text=f'Current step: {self.current_step_number}')
+        if self.program_jumps_left != None:
+            self.jumps_left_gui.configure(text=f"Jumps left: {self.program_jumps_left}")
+            self.jumps_left_gui.pack()
+        else:
+            self.jumps_left_gui.pack_forget()
+        if self.soak_time_left != None:
+            self.soak_time_left_gui.configure(text=f"Soak time left: {self.soak_time_left}")
+            self.soak_time_left_gui.pack()
+        else:
+            self.soak_time_left_gui.pack_forget()
         self.out1_label.configure(text=f'Output1: {'ON'if self.output_state1 else 'OFF'}')
         self.out2_label.configure(text=f'Output2: {'ON'if self.output_state2 else 'OFF'}')
         self.out3_label.configure(text=f'Output3: {'ON'if self.output_state3 else 'OFF'}')

@@ -1,6 +1,7 @@
 import datetime
 class SOAK:
     def __init__(self,time):
+        print("Created")
         self.type = "SOAK"
         self.created_time = datetime.datetime.now()
         self.time = None
@@ -10,9 +11,11 @@ class SOAK:
             self.time = time
 
     def decrease(self):
+        set_seconds = 5
         current_time = datetime.datetime.now()
-        if (current_time - self.created_time).total_seconds() > 5:
+        if (current_time - self.created_time).total_seconds() > set_seconds:
             self.time -=1
+            self.created_time = datetime.datetime.now()
 
 
 class JUMP:
@@ -36,7 +39,6 @@ class SET:
 
     # Definir funcion para comunicar con las salidas GPIO
     def change(self):
-        print("cambie las salidas")
         self.host.state_screen.changeOutputs(self.output1,self.output2,self.output3)
         
 
@@ -53,9 +55,9 @@ class ControlFlow:
         self.host = host
         self.current = None
         self.task_num = 0
+        self.stack_save = [None]
 
     def checkCurrentFlow(self, step):
-            print(f"Step: {step}")
             if self.host.state_screen.program_steps[step]== None:
                 return 0
             self.current = self.host.state_screen.program_steps[step]
@@ -113,11 +115,60 @@ class ControlFlow:
                     print("apagando")
             if self.stack == []:
                 self.stack = [None]
-            if self.stack != None or self.stack != [None]: 
-                print([name.type for name in self.stack if name != None])
+            if self.stack != None and self.stack != [None]: 
+                #print([name.type for name in self.stack if name != None])
                 #print(self.stack)
-            else:
-                print("None!")
+                if len(self.stack)>1:
+                    if self.stack[self.task_num-1]!= None:
+                        if self.stack[self.task_num-1].type=="JUMP":
+                            self.host.state_screen.program_jumps_left = self.stack[self.task_num-1].times
+                if self.stack[self.task_num] == None:
+                    pass
+                else:
+                    if self.stack[self.task_num].type=="SOAK":
+                        self.host.state_screen.soak_time_left = self.stack[self.task_num].time
+            self.stack_save = self.transformJSON()
 
-    def transforJSON():
-        pass
+    def transformJSON(self):
+        temp_stack = []
+        if self.stack != [None] and self.stack != None:
+            for stack_element in self.stack:
+                if stack_element == None:
+                    continue
+                if stack_element.type == "SET":
+                    temp_stack.append({
+                        "type":"SET",
+                        "output1":stack_element.output1,
+                        "output2":stack_element.output2,
+                        "output3":stack_element.output3})
+                elif stack_element.type == "SOAK":
+                    temp_stack.append({
+                        "type":"SOAK",
+                        "time":stack_element.time})
+                elif stack_element.type == "JUMP":
+                    temp_stack.append({
+                        "type":"JUMP",
+                        "times":stack_element.times,
+                        "step":stack_element.step,
+                        "step_id":stack_element.step_id})
+                elif stack_element.type == "END":
+                    temp_stack.append({
+                        "type":"END",
+                        "action":stack_element.action})
+        return temp_stack
+
+
+    def recoverTask(self,stack):
+        self.stack = []
+        for stk_elm in stack:
+            if stk_elm == {} or stk_elm == None:
+                self.stack.append(None)
+            elif stk_elm["type"] == "SET":
+                self.stack.append(SET(stk_elm["output1"],stk_elm["output2"],stk_elm["output3"],self.host))
+            elif stk_elm["type"] == "SOAK":
+                self.stack.append(SOAK(stk_elm["time"]))
+            elif stk_elm["type"] == "JUMP":
+                self.stack.append(JUMP(stk_elm["times"],stk_elm["step"],stk_elm["step_id"]))
+            elif stk_elm["type"] == "END":
+                self.stack.append(END(stk_elm["action"]))
+ 
