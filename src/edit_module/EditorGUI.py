@@ -34,17 +34,22 @@ class EditorGUI:
         self.err_jump_previus_n_al = CTkLabel(app, text="Error: Step selection not allowed, the current step has to be larger than the selected step")
         self.jump_times = CTkEntry(app)
         self.jump_step = CTkEntry(app)
-        
+       
+        self.current_step_text = CTkLabel(app)
+
         self.end_options_gui = CTkOptionMenu(app, values=self.end_options, command=self.end_program_select)
         self.end_switch_prog = CTkOptionMenu(app, command=self.end_program_select)
 
         self.next_step_button = CTkButton(app,text="Next", command=self.next_step)
         self.back_step_button = CTkButton(app,text="Back", command=self.back_step)
+        self.add_step_button = CTkButton(app, text="Add Step", command=self.add_step)
         self.save_button = CTkButton(app,text="Save Program", command=self.save_program)
         self.cancel_button = CTkButton(app,text="Cancel Edition", command=self.cancel_edition)
 
     def update(self):
         self.title.pack()
+        self.current_step_text.configure(text=f'Current step: {self.current_step}')
+        self.current_step_text.pack()
         self.name_gui.pack()
         self.name_entry_gui.pack()
         self.type_selector.pack()
@@ -58,6 +63,7 @@ class EditorGUI:
             self.showEND()
         self.next_step_button.pack()
         self.back_step_button.pack()
+        self.add_step_button.pack()
         self.save_button.pack()
         self.cancel_button.pack()
         if self.err_name:
@@ -65,35 +71,40 @@ class EditorGUI:
         else:
             self.err_name_exist.pack_forget()
 
+    def add_step(self):
+        self.steps_list.append({})
+        print(self.steps_list)
+        print(self.program)
+
     def back_step(self):
         old_step = self.current_step
         if self.current_step >0:
             self.oldStep(old_step)
             self.current_step -= 1
-            self.current_type = self.steps_list[self.current_step]['type']
+            if self.steps_list[self.current_step]!= {}:
+                self.current_type = self.steps_list[self.current_step]['type']
             self.refresh()
             print(self.current_step)
 
     def next_step(self):
         old_step = self.current_step
-        print(len(self.steps_list))
         if self.current_step < len(self.steps_list)-1:
             self.oldStep(old_step)
             self.current_step += 1
-            self.current_type = self.steps_list[self.current_step]['type']
+            if self.steps_list[self.current_step]!= {}:
+                self.current_type = self.steps_list[self.current_step]['type']
+            else:
+                self.current_type = None
             self.refresh()
             print(self.current_step)
 
     def save_program(self):
-        print(self.number)
-        print(self.name_entry_gui.get())
         self.oldStep(self.current_step)
         program={""}
         if self.host.file_controller.diffName(self.number,self.name_entry_gui.get()):
             self.program['name']=self.name_entry_gui.get()
             self.program['steps']=self.steps_list
             self.host.file_controller.saveProgram(self.program['number'],self.program)
-            print(self.program)
             self.program = None
             self.steps_list = None
             self.number = None
@@ -109,13 +120,11 @@ class EditorGUI:
         
     def cancel_edition(self):
         self.current_type = None
-        print(self.program)
         self.program = None
         self.number = None
         self.current_step = 0
         self.steps_list = None
         self.err_name = False
-        print(self.program)
         self.host.current_screen = 'program'
         self.host.update_Screen()
 
@@ -184,7 +193,6 @@ class EditorGUI:
                 self.steps_list[old]['program']=None
         elif self.current_type == None:
             pass
-        #print(self.steps_list)
 
     def loadStepConf(self):
         if self.current_type == 'SET':
@@ -207,6 +215,8 @@ class EditorGUI:
             self.steps_list[self.current_step]['type']='END'
             self.end_options_gui.set(self.steps_list[self.current_step]['action'])
             self.end_switch_prog.set(self.steps_list[self.current_step]['program'])
+        else:
+            self.type_selector.set("")
         
 
     def loadProgram(self):
@@ -216,7 +226,6 @@ class EditorGUI:
             self.number = self.program['number']
         if self.program['steps']!=None:
             self.steps_list = self.program['steps']
-            print(self.steps_list)
             if self.steps_list[0]== {}:
                 self.steps_list=[{}]
                 self.type_selector.set("")
@@ -224,8 +233,6 @@ class EditorGUI:
                 self.type_selector.set(self.steps_list[0]['type'])
                 self.current_type = self.steps_list[self.current_step]['type']
                 self.loadStepConf()
-        else:
-            print("N")
 
     def showSET(self):
         self.output1.pack()
