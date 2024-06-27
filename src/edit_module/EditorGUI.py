@@ -43,8 +43,10 @@ class EditorGUI:
         self.next_step_button = CTkButton(app,text="Next", command=self.next_step)
         self.back_step_button = CTkButton(app,text="Back", command=self.back_step)
         self.add_step_button = CTkButton(app, text="Add Step", command=self.add_step)
+        self.delete_step_button = CTkButton(app, text="Delete Step", command=self.delete_current_step)
         self.save_button = CTkButton(app,text="Save Program", command=self.save_program)
         self.cancel_button = CTkButton(app,text="Cancel Edition", command=self.cancel_edition)
+        self.err_delet_first_step = CTkLabel(app, text="Error: Can´t delete first step")
 
     def update(self):
         self.title.pack()
@@ -64,6 +66,7 @@ class EditorGUI:
         self.next_step_button.pack()
         self.back_step_button.pack()
         self.add_step_button.pack()
+        self.delete_step_button.pack()
         self.save_button.pack()
         self.cancel_button.pack()
         if self.err_name:
@@ -73,8 +76,19 @@ class EditorGUI:
 
     def add_step(self):
         self.steps_list.append({})
-        print(self.steps_list)
-        print(self.program)
+
+    def delete_current_step(self):
+        if self.current_step > 0:
+            del self.steps_list[self.current_step]
+            self.current_step -=1
+            if self.steps_list[self.current_step]!= {}:
+                self.current_type = self.steps_list[self.current_step]['type']
+            self.refresh()
+            self.err_delet_first_step.pack_forget()
+        else:
+            self.err_delet_first_step.pack()
+            print("No hay elemetos suficientes")
+
 
     def back_step(self):
         old_step = self.current_step
@@ -125,6 +139,7 @@ class EditorGUI:
         self.current_step = 0
         self.steps_list = None
         self.err_name = False
+        self.host.file_controller.reload()
         self.host.current_screen = 'program'
         self.host.update_Screen()
 

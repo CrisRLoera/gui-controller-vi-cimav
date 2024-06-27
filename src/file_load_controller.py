@@ -44,6 +44,7 @@ class FileLoadController:
     def getProgram(self,name):
         for program in self.programs_list:
             if name == program['name']:
+                print(program)
                 return program
 
     def getProgramByNum(self,name):
