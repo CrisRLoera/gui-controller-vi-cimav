@@ -1,8 +1,9 @@
-from customtkinter import CTkLabel, CTkButton, CTkOptionMenu
+from customtkinter import CTkLabel, CTkButton, CTkOptionMenu, CTkToplevel, CTkEntry
 
 class ProgramGUI:
     def __init__(self,app,host,state,editor):
         self.host = host
+        self.app = app
         self.state = state
         self.editor = editor
         self.menu = CTkLabel(app,text="Programas")
@@ -14,7 +15,35 @@ class ProgramGUI:
         self.cancel_program_gui = CTkButton(app,text='Cancel', command=self.cancel)
         self.selected = None
         self.flag_unselected = CTkLabel(app, text="Select a program to load")
+        
+        self.create_program_button = CTkButton(app, text="Crear", command=self.create_program)
+        self.delete_program_button = CTkButton(app, text="Del", command=self.delete_program)
 
+        self.err_empty_steps = False
+        self.err_empty_steps_msg = CTkLabel(app, text="Error: Can´t load the selected program is empty")
+
+    def create_program(self):
+        popup = CTkToplevel(self.app)
+        popup.title("Program Name")
+        popup.geometry("300x150")
+        popup_label = CTkLabel(popup, text="New program name:")
+        popup_label.pack()
+        popup_entry = CTkEntry(popup)
+        popup_entry.pack()
+        close_button = CTkButton(popup, text="Create", command=lambda: self.create_event(popup_entry.get(),popup))
+        close_button.pack()
+
+    def create_event(self,name,popup):
+        self.host.file_controller.createProgram(str(name))
+        popup.destroy()
+        self.program_selector_gui.set("")
+        self.update()
+
+    def delete_program(self):
+        self.host.file_controller.deleteProgram()
+        self.program_selector_gui.set("")
+        self.update()
+            
     def update(self):
         self.setProgramsList()
         self.menu.pack()
@@ -22,10 +51,17 @@ class ProgramGUI:
         self.load_program_gui.pack()
         self.edit_program_gui.pack()
         self.cancel_program_gui.pack()
+        self.delete_program_button.pack()
+        self.create_program_button.pack()
         if self.selected != None:
             self.flag_unselected.pack_forget()
         else:
             self.flag_unselected.pack()
+        if self.err_empty_steps:
+            self.err_empty_steps_msg.pack()
+        else:
+            self.err_empty_steps_msg.pack_forget()
+
 
     def setSelection(self, choice):
         self.selected = choice
@@ -43,10 +79,17 @@ class ProgramGUI:
 
     def update_program(self):
         if self.selected != None:
-            self.state.current_program = self.host.file_controller.getProgram(self.selected)
-            self.state.changeCurrentProgram()
-            self.host.current_screen = 'state'
-            self.host.update_Screen()
+            temp = self.host.file_controller.getProgram(self.selected) 
+            print(temp)
+            if temp['steps']==[{}]:
+                self.err_empty_steps = True
+                self.update()
+            else:
+                self.err_empty_steps = False
+                self.state.current_program = temp
+                self.state.changeCurrentProgram()
+                self.host.current_screen = 'state'
+                self.host.update_Screen()
 
     def cancel(self):
         self.program_selector_gui.set("")

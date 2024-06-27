@@ -6,7 +6,7 @@ from src.edit_module.EditorGUI import EditorGUI
 from src.file_load_controller import FileLoadController
 from src.RecoveryController import RecoveryController
 import nmcli
-from customtkinter import CTk, CTkLabel, CTkButton
+from customtkinter import CTk, CTkLabel, CTkButton, CTkToplevel
 import datetime
 
 class MainApp:
@@ -88,7 +88,10 @@ class MainApp:
 
     def refresh_main_screen(self):
         for widget in self.gui_app.winfo_children():
-            widget.pack_forget()
+            if isinstance(widget, CTkToplevel):
+                pass
+            else:
+                widget.pack_forget()
 
     def update_hub(self):
         self.wifi_status_hub.configure(text=self.wifi_status_icon)

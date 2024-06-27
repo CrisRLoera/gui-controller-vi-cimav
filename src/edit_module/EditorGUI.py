@@ -108,8 +108,17 @@ class EditorGUI:
             self.update()
         
     def cancel_edition(self):
+        self.current_type = None
+        print(self.program)
+        self.program = None
+        self.number = None
+        self.current_step = 0
+        self.steps_list = None
+        self.err_name = False
+        print(self.program)
         self.host.current_screen = 'program'
         self.host.update_Screen()
+
 
     def select_type(self,choice):
         self.current_type = choice
@@ -175,7 +184,7 @@ class EditorGUI:
                 self.steps_list[old]['program']=None
         elif self.current_type == None:
             pass
-        print(self.steps_list)
+        #print(self.steps_list)
 
     def loadStepConf(self):
         if self.current_type == 'SET':
@@ -207,9 +216,16 @@ class EditorGUI:
             self.number = self.program['number']
         if self.program['steps']!=None:
             self.steps_list = self.program['steps']
-            self.type_selector.set(self.steps_list[0]['type'])
-            self.current_type = self.steps_list[self.current_step]['type']
-            self.loadStepConf()
+            print(self.steps_list)
+            if self.steps_list[0]== {}:
+                self.steps_list=[{}]
+                self.type_selector.set("")
+            else:
+                self.type_selector.set(self.steps_list[0]['type'])
+                self.current_type = self.steps_list[self.current_step]['type']
+                self.loadStepConf()
+        else:
+            print("N")
 
     def showSET(self):
         self.output1.pack()
@@ -235,4 +251,3 @@ class EditorGUI:
             self.end_switch_prog.pack()
         else:
             self.end_switch_prog.pack_forget()
-        
