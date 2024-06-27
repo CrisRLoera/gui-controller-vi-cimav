@@ -17,6 +17,7 @@ class ProgramGUI:
         self.flag_unselected = CTkLabel(app, text="Select a program to load")
         
         self.create_program_button = CTkButton(app, text="Crear", command=self.create_program)
+        self.clone_program_button = CTkButton(app, text="Clone", command=self.clone_program) 
         self.delete_program_button = CTkButton(app, text="Del", command=self.delete_program)
 
         self.err_empty_steps = False
@@ -33,6 +34,12 @@ class ProgramGUI:
         close_button = CTkButton(popup, text="Create", command=lambda: self.create_event(popup_entry.get(),popup))
         close_button.pack()
 
+    def clone_program(self):
+        if self.selected != None:
+            self.host.file_controller.cloneProgram(self.selected)
+            self.program_selector_gui.set("")
+            self.update()
+
     def create_event(self,name,popup):
         self.host.file_controller.createProgram(str(name))
         popup.destroy()
@@ -40,19 +47,27 @@ class ProgramGUI:
         self.update()
 
     def delete_program(self):
-        self.host.file_controller.deleteProgram()
-        self.program_selector_gui.set("")
-        self.update()
+        if self.selected != None:
+            self.host.file_controller.deleteProgram(self.selected)
+            self.program_selector_gui.set("")
+            self.update()
             
     def update(self):
         self.setProgramsList()
         self.menu.pack()
         self.program_selector_gui.pack()
-        self.load_program_gui.pack()
-        self.edit_program_gui.pack()
-        self.cancel_program_gui.pack()
-        self.delete_program_button.pack()
         self.create_program_button.pack()
+        if self.selected == None:
+            self.load_program_gui.pack_forget()
+            self.edit_program_gui.pack_forget()
+            self.delete_program_button.pack_forget()
+            self.clone_program_button.pack_forget()
+        else:
+            self.load_program_gui.pack()
+            self.edit_program_gui.pack()
+            self.delete_program_button.pack()
+            self.clone_program_button.pack()
+        self.cancel_program_gui.pack()
         if self.selected != None:
             self.flag_unselected.pack_forget()
         else:

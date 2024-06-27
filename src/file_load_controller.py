@@ -70,7 +70,7 @@ class FileLoadController:
 
     def createProgram(self,name):
         schema = {
-            "number": 0,
+            "number": int(self.conf_file['creation_id']),
             "name": f"{name}",
             "steps": [{}],
             "file_name": f"{name}.json"}
@@ -83,6 +83,23 @@ class FileLoadController:
         self.conf_file["creation_id"]+=1
         self.updateConf()
         self.reload()
+
+    def cloneProgram(self,name):
+        prog = self.getProgram(name)
+        schema = {
+            "number": int(self.conf_file['creation_id']),
+            "name": f"{name}-copy",
+            "steps": prog['steps'],
+            "file_name": f"{name}-copy.json"}
+        programs_path = '../programs/'+schema['file_name']
+        base_path = os.path.abspath(os.path.dirname(__file__))
+        path = os.path.join(base_path, programs_path)
+        with open (path,'w') as file:
+            json.dump(schema,file, indent=8)
+        self.conf_file["creation_id"]+=1
+        self.updateConf()
+        self.reload()
+
 
     def deleteProgram(self,name):
         prog = self.getProgram(name)
