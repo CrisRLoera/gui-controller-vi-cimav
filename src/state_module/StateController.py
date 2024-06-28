@@ -63,6 +63,8 @@ class ControlFlow:
                 return 0
             self.current = self.host.state_screen.program_steps[step]
             self.step = step
+            if self.stack == []:
+                self.stack = [None]
             if self.current["type"] == "SET":
                 if self.stack[self.task_num] == None:
                     self.stack[self.task_num] = SET(self.current["output1"],self.current["output2"],self.current["output3"],self.host)
@@ -113,6 +115,7 @@ class ControlFlow:
 
             elif self.current["type"] == "END":
                 print(self.task_num)
+                print(self.stack)
                 if self.stack[self.task_num] == None:
                     self.stack[self.task_num] = END(self.current['action'],self.current['program'])
                 elif self.stack[self.task_num].action == 'PowerOFF':
@@ -132,8 +135,8 @@ class ControlFlow:
                     self.current = None
                     self.task_num = 0
                     self.stack_save = [None]
-            if self.stack == []:
-                self.stack = [None]
+                    self.host.state_screen.program_state = True
+            
             if self.stack != None and self.stack != [None]: 
                 #print([name.type for name in self.stack if name != None])
                 #print(self.stack)
