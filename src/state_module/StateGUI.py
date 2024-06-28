@@ -54,9 +54,9 @@ class StateGUI:
             self.soak_time_left_gui.pack()
         else:
             self.soak_time_left_gui.pack_forget()
-        self.out1_label.configure(text=f'Output1: {'ON'if self.output_state1 else 'OFF'}')
-        self.out2_label.configure(text=f'Output2: {'ON'if self.output_state2 else 'OFF'}')
-        self.out3_label.configure(text=f'Output3: {'ON'if self.output_state3 else 'OFF'}')
+        self.out1_label.configure(text=f"Output1: {'ON'if self.output_state1 else 'OFF'}")
+        self.out2_label.configure(text=f"Output2: {'ON'if self.output_state2 else 'OFF'}")
+        self.out3_label.configure(text=f"Output3: {'ON'if self.output_state3 else 'OFF'}")
         self.program_state_gui.pack()
         self.name_gui.pack()
         self.number_gui.pack()
@@ -65,7 +65,7 @@ class StateGUI:
         self.out2_label.pack()
         self.out3_label.pack()
 
-        self.program_state_gui.configure(text=f'State: {'Running'if self.program_state else 'Stop'}')
+        self.program_state_gui.configure(text=f"State: {'Running'if self.program_state else 'Stop'}")
         self.run_program_button_gui.configure(text='Stop'if self.program_state else 'Run')
         self.run_program_button_gui.pack()
         self.program_steps = self.current_program['steps']
@@ -77,7 +77,6 @@ class StateGUI:
             self.err_no_crnt_prg_text.pack()
         else:
             self.err_no_crnt_prg_text.pack_forget()
-        print(self.program_state)
 
     def run_current_program(self):
         if self.current_program == {'number': None, 'name': None, 'steps': None}:
@@ -86,6 +85,7 @@ class StateGUI:
             return 0
         self.err_no_current_program = False
         if self.program_state == True:
+            self.host.recovery_controller.gen_empty_recovery_file()
             self.program_state = False
             self.update()
         else:
@@ -93,7 +93,11 @@ class StateGUI:
             self.update()
             self.host.recovery_controller.gen_recovery_file()
 
-#    def updateStateData(self):
+    def turnOff(self):
+        self.host.recovery_controller.gen_empty_recovery_file()
+        self.program_state = False
+        self.update()
+
 
     def changeOutputs(self,out1,out2,out3):
         self.output_state1 = out1

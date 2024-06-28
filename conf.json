@@ -1,4 +1,7 @@
 {
-        "creation_id": 9,
-        "maintenance": ""
+        "creation_id": 13,
+        "maintenance": "",
+        "host": "listas.cimav.edu.mx",
+        "port": 25,
+        "sender": "ivan@listas.cimav.edu.mx"
 }

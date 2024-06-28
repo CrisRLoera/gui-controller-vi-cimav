@@ -1,4 +1,7 @@
 import nmcli
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib
 
 def network_get_ssid_list():
     try:
@@ -19,3 +22,6 @@ def network_get_ssid_list():
 def network_connect(ssid_input,pwd_input):
     nmcli.device.wifi_connect(ssid_input, pwd_input)
     #print(nmcli.device.status())
+
+
+

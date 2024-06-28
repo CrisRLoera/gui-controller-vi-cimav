@@ -1,16 +1,20 @@
-from customtkinter import CTkLabel, CTkEntry, CTkCheckBox, CTkOptionMenu, CTkButton
+from customtkinter import CTkLabel, CTkEntry, CTkCheckBox, CTkOptionMenu, CTkButton, CTkToplevel
 from tkinter import StringVar, BooleanVar
 class EditorGUI:
     def __init__(self, app,host):
         self.title = CTkLabel(app,text="Editor")
         self.program = None
         self.steps_list = None
+        self.app = app
         self.name_gui = CTkLabel(app,text='Program Name: ')
         self.number = None
         self.name_entry_gui = CTkEntry(app)
         self.host = host
         self.current_step = 0
         self.current_type = None
+        self.responsible_email = None
+        self.interupt_preference = None
+        self.step_change_notify = None
         self.types = ["SET","SOAK","JUMP","END"]
         self.end_options = ["PowerOFF","Restart","SwitchProgram"]
 
@@ -23,6 +27,9 @@ class EditorGUI:
         self.outputCheck1 = BooleanVar()
         self.outputCheck2 = BooleanVar()
         self.outputCheck3 = BooleanVar()
+
+        self.set_email_enable = BooleanVar()
+        self.advance_button = CTkButton(app, text="Advance", command=self.open_advance)
 
         self.output1 = CTkCheckBox(app,text="Output1", variable=self.outputCheck1)
         self.output2 = CTkCheckBox(app,text="Output2", variable=self.outputCheck2)
@@ -48,6 +55,50 @@ class EditorGUI:
         self.cancel_button = CTkButton(app,text="Cancel Edition", command=self.cancel_edition)
         self.err_delet_first_step = CTkLabel(app, text="Error: Can´t delete first step")
 
+    def open_advance(self):
+        advance = CTkToplevel(self.app)
+        advance_email = CTkLabel(advance, text="Responsible email")
+        advance_email_entry = CTkEntry(advance)
+        step_change = CTkCheckBox(advance,text="Let me know every step change")
+        interruption = CTkCheckBox(advance,text="Notify me of interruptions")
+
+        def update_email():
+            if self.set_email_enable.get():
+                advance_email.pack()
+                advance_email_entry.pack()
+                step_change.pack()
+                interruption.pack()
+                confirm_button.pack_forget()
+                confirm_button.pack()
+            else:
+                advance_email.pack_forget()
+                advance_email_entry.pack_forget()
+                step_change.pack_forget()
+                interruption.pack_forget()
+                confirm_button.pack_forget()
+                confirm_button.pack()
+        send_me = CTkCheckBox(advance,text="Send me and email", variable=self.set_email_enable, command=update_email)
+        send_me.pack()
+
+        def confirm(email, pref1,pref2):  
+            if self.set_email_enable.get():
+                self.responsible_email = email
+                self.interupt_preference = pref1
+                self.step_change_notify = pref2
+                print(self.interupt_preference)
+                print(self.step_change_notify)
+                print(self.responsible_email)
+            else:
+                self.reset_preferences()
+            advance.destroy()
+
+        confirm_button = CTkButton(advance, text="Confirm", command=lambda: confirm(advance_email_entry.get(),step_change.get(),interruption.get()))
+        confirm_button.pack()
+    def reset_preferences(self):
+        self.responsible_email = None
+        self.interupt_preference = None
+        self.step_cahnge_notify = None
+
     def update(self):
         self.title.pack()
         self.current_step_text.configure(text=f'Current step: {self.current_step}')
@@ -67,6 +118,7 @@ class EditorGUI:
         self.back_step_button.pack()
         self.add_step_button.pack()
         self.delete_step_button.pack()
+        self.advance_button.pack()
         self.save_button.pack()
         self.cancel_button.pack()
         if self.err_name:
@@ -118,8 +170,12 @@ class EditorGUI:
         if self.host.file_controller.diffName(self.number,self.name_entry_gui.get()):
             self.program['name']=self.name_entry_gui.get()
             self.program['steps']=self.steps_list
+            self.program['responsible']= self.responsible_email
+            self.program['interrupt'] = self.interupt_preference
+            self.program['step change notify'] = self.step_change_notify
             self.host.file_controller.saveProgram(self.program['number'],self.program)
             self.program = None
+            self.reset_preferences()
             self.steps_list = None
             self.number = None
             self.current_step = 0
@@ -139,6 +195,7 @@ class EditorGUI:
         self.current_step = 0
         self.steps_list = None
         self.err_name = False
+        self.reset_preferences()
         self.host.file_controller.reload()
         self.host.current_screen = 'program'
         self.host.update_Screen()
@@ -269,7 +326,6 @@ class EditorGUI:
         self.end_options_gui.pack()
         if self.steps_list[self.current_step]['action']=='SwitchProgram':
             self.end_switch_prog.configure(values=[name['name'] for name in self.host.file_controller.programs_list])
-            self.end_switch_prog.set(self.end_switch_prog._values[0])
             self.end_switch_prog.pack()
         else:
             self.end_switch_prog.pack_forget()

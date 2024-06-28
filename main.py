@@ -5,6 +5,7 @@ from src.program_module.ProgramGUI import ProgramGUI
 from src.edit_module.EditorGUI import EditorGUI
 from src.file_load_controller import FileLoadController
 from src.RecoveryController import RecoveryController
+from src.network_module.EmailController import EmailController
 import nmcli
 from customtkinter import CTk, CTkLabel, CTkButton, CTkToplevel
 import datetime
@@ -18,6 +19,7 @@ class MainApp:
         self.recovery_controller = RecoveryController(self)
 
         self.network_screen = NetworkGUI(self.gui_app)
+        self.email_controller = EmailController(self)
         self.state_screen = StateGUI(self.gui_app,self)
         self.state_controller = ControlFlow(self)
         self.editor_screen = EditorGUI(self.gui_app,self)
@@ -34,7 +36,7 @@ class MainApp:
             self.current_screen = 'state'
         else:
             self.current_screen = 'network'
-        
+        self.currnet_screen = 'state'
         self.recovery_controller.checkRecovery()
 
     def isConnected(self):
@@ -61,7 +63,7 @@ class MainApp:
             self.network_screen.update()
         self.gui_app.after(5000, self.check_connection)
 
-    def check_time(self):
+    def check_main_flow(self):
         if self.state_screen.program_state:
             #print(self.current_time)
             self.recovery_controller.checkClock(self.current_time)
@@ -69,7 +71,7 @@ class MainApp:
             self.state_screen.update()
         self.current_time = datetime.datetime.now()
         self.update_hub()
-        self.gui_app.after(1000, self.check_time)
+        self.gui_app.after(1000, self.check_main_flow)
 
     def update_Screen(self):
         self.refresh_main_screen()
@@ -84,7 +86,7 @@ class MainApp:
         elif self.current_screen == 'editor':
             self.editor_screen.update()
         self.check_connection()
-        self.check_time()
+        self.check_main_flow()
         self.gui_app.mainloop()
 
     def refresh_main_screen(self):

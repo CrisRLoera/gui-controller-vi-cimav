@@ -43,9 +43,10 @@ class SET:
         
 
 class END:
-    def __init__(self,action):
+    def __init__(self,action,prog):
         self.type = "END"
         self.action = action
+        self.program = prog
     	
 
 
@@ -68,6 +69,8 @@ class ControlFlow:
                     self.stack[self.task_num].change()
                     self.host.state_screen.current_step_number += 1
                     self.stack[self.task_num] = None
+                    if self.host.isConnected() and self.host.state_screen.current_program["step change notify"] == 1:
+                        self.host.email_controller.send_interruption_email(self.host.state_screen.current_program ["responsible"])
             elif self.current["type"] == "SOAK":
                 isOver = False
                 if self.stack[self.task_num] == None:
@@ -109,10 +112,26 @@ class ControlFlow:
                         self.task_num += 1
 
             elif self.current["type"] == "END":
+                print(self.task_num)
                 if self.stack[self.task_num] == None:
-                    self.stack[self.task_num] = END(self.current['action'])
+                    self.stack[self.task_num] = END(self.current['action'],self.current['program'])
                 elif self.stack[self.task_num].action == 'PowerOFF':
                     print("apagando")
+                    self.host.state_screen.turnOff()
+                elif self.stack[self.task_num].action == 'Restart':
+                    self.host.state_screen.current_step_number = 0
+                    self.stack = [None]
+                    self.current = None
+                    self.task_num = 0
+                    self.stack_save = [None]
+                elif self.stack[self.task_num].action == 'SwitchProgram':
+                    self.host.state_screen.current_program = self.host.file_controller.getProgram(self.current['program'])
+                    self.host.state_screen.current_step_number = 0
+                    self.host.state_screen.changeCurrentProgram()
+                    self.stack = [None]
+                    self.current = None
+                    self.task_num = 0
+                    self.stack_save = [None]
             if self.stack == []:
                 self.stack = [None]
             if self.stack != None and self.stack != [None]: 
@@ -154,7 +173,8 @@ class ControlFlow:
                 elif stack_element.type == "END":
                     temp_stack.append({
                         "type":"END",
-                        "action":stack_element.action})
+                        "action":stack_element.action,
+                        "program":stack_element.program})
         return temp_stack
 
 
@@ -170,5 +190,5 @@ class ControlFlow:
             elif stk_elm["type"] == "JUMP":
                 self.stack.append(JUMP(stk_elm["times"],stk_elm["step"],stk_elm["step_id"]))
             elif stk_elm["type"] == "END":
-                self.stack.append(END(stk_elm["action"]))
+                self.stack.append(END(stk_elm["action"],stk_elm["program"]))
  

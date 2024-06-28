@@ -22,3 +22,5 @@ class NetworkGUI:
         self.ssid_combo.pack()
         self.pwd_entry.pack()
         self.connect_button.pack()
+    def send(self):
+        send_email()

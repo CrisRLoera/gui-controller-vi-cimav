@@ -11,7 +11,6 @@ class FileLoadController:
     def loadConf(self):
         with open ("./conf.json") as file:
             conf_file = json.load(file)
-            print(conf_file)
             return conf_file
 
     def updateConf(self):

@@ -38,15 +38,15 @@ class RecoveryController:
             schema = {
                     "compleated": True,
                     "date": str(datetime.datetime.now().replace(microsecond=0)),
-                    "output1": self.host.state_screen.output_state1,
-                    "output2": self.host.state_screen.output_state2,
-                    "output3": self.host.state_screen.output_state3,
-                    "jumps": self.host.state_screen.program_jumps_left,
-                    "time left": self.host.state_screen.time_left,
-                    "last program": self.host.state_screen.program_name,
-                    "last step": self.host.state_screen.current_step_number,
-                    "task num":self.host.state_controller.task_num,
-                    "stack":self.host.state_controller.stack_save
+                    "output1": None,
+                    "output2": None,
+                    "output3": None,
+                    "jumps": None,
+                    "time left": None,
+                    "last program": None,
+                    "last step": None,
+                    "task num": None,
+                    "stack": None
             }
             json.dump(schema,file, indent=8)
         self.get_recovery_file()
@@ -68,12 +68,13 @@ class RecoveryController:
                 if not self.file["compleated"] and self.file['last program']!=None:
                     print("Recovering")
                     self.host.state_screen.current_program = self.host.file_controller.getProgram(self.file['last program'])
-                    self.host.state_screen.current_step_number = self.file['last step']
-    
+                    if self.host.isConnected() and self.host.state_screen.current_program["interrupt"]==1:
+                        # Not implemented: Register or advice of non set responsible
+                        self.host.email_controller.send_interruption_email(self.host.state_screen.current_program ["responsible"])
+                    self.host.state_screen.current_step_number = self.file['last step'] 
                     self.host.state_screen.output_state1 = self.file['output1']
                     self.host.state_screen.output_state2 = self.file['output2']
                     self.host.state_screen.output_state3 = self.file['output3']
-    
                     self.host.state_screen.program_jumps_left = self.file['jumps']
                     self.host.state_screen.time_left = self.file['time left']
                     self.host.state_controller.task_num = self.file['task num']
