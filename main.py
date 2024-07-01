@@ -40,6 +40,9 @@ class MainApp:
 
         self.recovery_controller.checkRecovery()
         self.update_Screen()
+        self.check_connection()
+        self.check_main_flow()
+        self.check_reminder()
 
     def isConnected(self):
         nmcli.disable_use_sudo()
@@ -96,9 +99,7 @@ class MainApp:
             self.program_screen.update()
         elif self.current_screen == 'editor':
             self.editor_screen.update()
-        self.check_connection()
-        self.check_main_flow()
-        self.check_reminder()
+        
 
     def refresh_main_screen(self):
         for widget in self.gui_app.winfo_children():
