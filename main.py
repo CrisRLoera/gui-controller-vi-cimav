@@ -32,7 +32,7 @@ class MainApp:
         self.time_hub = CTkLabel(self.gui_app,text=f"{self.current_time}")
         self.wifi_status_hub = CTkButton(self.gui_app,text=f'{self.wifi_status_icon}', command=self.network_screen.update)
         self.conf_screen = ConfigureGUI(self.gui_app,self)
-        self.conf_hub = CTkButton(self.gui_app, text="", command=self.conf_screen.update)
+        self.conf_hub = CTkButton(self.gui_app, text="configuration", command=self.conf_screen.update)
 
         self.current_screen = 'state'
 
@@ -44,10 +44,10 @@ class MainApp:
         for dev in dev_list:
             if dev.state == 'connected' and dev.device_type == 'wifi':
                 print("Connect")
-                self.wifi_status_icon = '󰖩'
+                self.wifi_status_icon = 'connect'
                 self.update_hub()
                 return True
-        self.wifi_status_icon = '󰖪'
+        self.wifi_status_icon = 'disconnected'
         self.update_hub()
         return False
 

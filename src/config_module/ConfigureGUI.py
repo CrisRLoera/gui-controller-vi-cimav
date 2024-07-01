@@ -95,10 +95,10 @@ class ConfigureGUI:
         self.maintenance_email_entry.insert(0,self.conf_file['maintenance'])
         self.devices_label = CTkLabel(self.conf_view, text="Devices")
         self.get_devices()
-        self.edit_mode = CTkButton(self.conf_view,text="", command=self.enable_edit_mode)
-        self.add_device = CTkButton(self.conf_view,text="+", command=self.add_device)
-        self.exit_edit_mode = CTkButton(self.conf_view,text="󰜺", command=self.disable_edit_mode)
-        self.save_edit_mode = CTkButton(self.conf_view,text="", command=self.save_edition)
+        self.edit_mode = CTkButton(self.conf_view,text="edit", command=self.enable_edit_mode)
+        self.add_device = CTkButton(self.conf_view,text="add", command=self.add_device)
+        self.exit_edit_mode = CTkButton(self.conf_view,text="cancel", command=self.disable_edit_mode)
+        self.save_edit_mode = CTkButton(self.conf_view,text="save", command=self.save_edition)
 
         self.close_button = CTkButton(self.conf_view,text="Close",command=self.close_window)
 
