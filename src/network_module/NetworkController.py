@@ -1,7 +1,5 @@
 import nmcli
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-import smtplib
+
 
 def network_get_ssid_list():
     try:

@@ -1,7 +1,18 @@
 {
-        "creation_id": 13,
+        "creation_id": 15,
         "maintenance": "",
         "host": "listas.cimav.edu.mx",
-        "port": 25,
-        "sender": "ivan@listas.cimav.edu.mx"
+        "port": "25",
+        "sender": "ivan@listas.cimav.edu.mx",
+        "maintenance devices": [
+                {
+                        "name": "General",
+                        "use limit": 450,
+                        "output": "output1",
+			"last reminder": null
+                }
+        ],
+	"output1 on time":0,
+	"output2 on time":0,
+	"output3 on time":0
 }

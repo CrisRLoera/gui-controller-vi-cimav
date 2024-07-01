@@ -39,7 +39,8 @@ class SET:
 
     # Definir funcion para comunicar con las salidas GPIO
     def change(self):
-        self.host.state_screen.changeOutputs(self.output1,self.output2,self.output3)
+        self.host.host.state_screen.changeOutputs(self.output1,self.output2,self.output3)
+        self.host.changeOutputs(self.output1,self.output2, self.output3)
         
 
 class END:
@@ -58,6 +59,13 @@ class ControlFlow:
         self.task_num = 0
         self.stack_save = [None]
 
+        self.output1 = False
+        self.output1_on_time = None
+        self.output2 = False
+        self.output2_on_time = None
+        self.output3 = False
+        self.output3_on_time = None
+
     def checkCurrentFlow(self, step):
             if self.host.state_screen.program_steps[step]== None:
                 return 0
@@ -67,12 +75,12 @@ class ControlFlow:
                 self.stack = [None]
             if self.current["type"] == "SET":
                 if self.stack[self.task_num] == None:
-                    self.stack[self.task_num] = SET(self.current["output1"],self.current["output2"],self.current["output3"],self.host)
+                    self.stack[self.task_num] = SET(self.current["output1"],self.current["output2"],self.current["output3"],self)
                     self.stack[self.task_num].change()
                     self.host.state_screen.current_step_number += 1
                     self.stack[self.task_num] = None
                     if self.host.isConnected() and self.host.state_screen.current_program["step change notify"] == 1:
-                        self.host.email_controller.send_interruption_email(self.host.state_screen.current_program ["responsible"])
+                        self.host.email_controller.send_step_change_email(self.host.state_screen.current_program ["responsible"],"SET",step)
             elif self.current["type"] == "SOAK":
                 isOver = False
                 if self.stack[self.task_num] == None:
@@ -86,6 +94,8 @@ class ControlFlow:
                 if isOver:
                     self.host.state_screen.current_step_number += 1
                     self.stack[self.task_num] = None
+                    if self.host.isConnected() and self.host.state_screen.current_program["step change notify"] == 1:
+                        self.host.email_controller.send_step_change_email(self.host.state_screen.current_program ["responsible"],"SOAK",step)
             elif self.current["type"] == "JUMP":
                 if (self.task_num - 1)>=0:
                     if self.stack[self.task_num-1].step_id == step:
@@ -93,6 +103,8 @@ class ControlFlow:
                         if self.stack[self.task_num].times == 0:
                             self.host.state_screen.current_step_number += 1
                             self.stack[self.task_num]=None
+                            if self.host.isConnected() and self.host.state_screen.current_program["step change notify"] == 1:
+                                self.host.email_controller.send_step_change_email(self.host.state_screen.current_program ["responsible"],"JUMP",step)
                         else:
                             self.stack[self.task_num].decrease()
                             self.host.state_screen.current_step_number = self.stack[self.task_num].step
@@ -121,12 +133,16 @@ class ControlFlow:
                 elif self.stack[self.task_num].action == 'PowerOFF':
                     print("apagando")
                     self.host.state_screen.turnOff()
+                    if self.host.isConnected() and self.host.state_screen.current_program["end notify"] == 1:
+                        self.host.email_controller.send_program_finalize_email(self.host.state_screen.current_program ["responsible"],"PowerOFF")
                 elif self.stack[self.task_num].action == 'Restart':
                     self.host.state_screen.current_step_number = 0
                     self.stack = [None]
                     self.current = None
                     self.task_num = 0
                     self.stack_save = [None]
+                    if self.host.isConnected() and self.host.state_screen.current_program["end notify"] == 1:
+                        self.host.email_controller.send_program_finalize_email(self.host.state_screen.current_program ["responsible"],"Restart")
                 elif self.stack[self.task_num].action == 'SwitchProgram':
                     self.host.state_screen.current_program = self.host.file_controller.getProgram(self.current['program'])
                     self.host.state_screen.current_step_number = 0
@@ -136,6 +152,9 @@ class ControlFlow:
                     self.task_num = 0
                     self.stack_save = [None]
                     self.host.state_screen.program_state = True
+                    if self.host.isConnected() and self.host.state_screen.current_program["end notify"] == 1:
+                        end_msg = "Switch Program to {self.current['program']}"
+                        self.host.email_controller.send_program_finalize_email(self.host.state_screen.current_program ["responsible"],end_msg)
             
             if self.stack != None and self.stack != [None]: 
                 #print([name.type for name in self.stack if name != None])
@@ -194,4 +213,38 @@ class ControlFlow:
                 self.stack.append(JUMP(stk_elm["times"],stk_elm["step"],stk_elm["step_id"]))
             elif stk_elm["type"] == "END":
                 self.stack.append(END(stk_elm["action"],stk_elm["program"]))
- 
+
+    def changeOutputs(self, out1,out2,out3):
+        self.output1 = out1
+        self.output2 = out2
+        self.output3 = out3
+
+    def trackOutputs(self):
+        set_seconds = 60
+        current_time = datetime.datetime.now()
+        if self.output1 and self.output1_on_time !=None:
+            if (current_time - self.output1_on_time).total_seconds() > set_seconds:
+                self.conf_file['output1 on time'] += 1
+        elif self.output1 and self.output1_on_time == None:
+            self.output1_on_time = datetime.datetime.now()
+        elif self.output1 == False:
+            self.output1_on_time = None
+
+        if self.output2 and self.output2_on_time !=None:
+            if (current_time - self.output2_on_time).total_seconds() > set_seconds:
+                self.conf_file['output2 on time'] += 1
+        elif self.output2 and self.output2_on_time == None:
+            self.output2_on_time = datetime.datetime.now()
+        elif self.output2 == False:
+            self.output2_on_time = None
+
+        if self.output3 and self.output3_on_time !=None:
+            if (current_time - self.output3_on_time).total_seconds() > set_seconds:
+                self.conf_file['output3 on time'] += 1
+        elif self.output3 and self.output3_on_time == None:
+            self.output3_on_time = datetime.datetime.now()
+        elif self.output3 == False:
+            self.output3_on_time = None
+        self.host.host.file_controller.updateConf()
+        self.host.host.file_controller.loadConf()
+

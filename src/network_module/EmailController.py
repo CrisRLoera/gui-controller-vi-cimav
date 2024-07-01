@@ -37,8 +37,8 @@ class EmailController:
         server.quit()
 
 # mandar correo al finalizar
-    def send_program_finalize_email(self,program_owner):
-        mailtext = f"The program has successfully completed."
+    def send_program_finalize_email(self,program_owner,end_message):
+        mailtext = f"The program has ended with completion status - {end-message}."
         msg = MIMEMultipart('alternative')
         msg['Subject'] = "Program completed"
         msg['From'] = self.host.file_controller.conf_file["sender"]
