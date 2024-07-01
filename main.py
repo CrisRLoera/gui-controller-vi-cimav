@@ -14,7 +14,8 @@ import datetime
 class MainApp:
     def __init__(self):
         self.gui_app = CTk()
-        self.gui_app.attributes("-fullscreen", True)
+        self.gui_app.geometry("800x480")
+#        self.gui_app.attributes("-fullscreen", True)
         self.current_screen = ''
         
         self.file_controller = FileLoadController()
@@ -38,6 +39,7 @@ class MainApp:
         self.current_screen = 'state'
 
         self.recovery_controller.checkRecovery()
+        self.update_Screen()
 
     def isConnected(self):
         nmcli.disable_use_sudo()
@@ -97,7 +99,6 @@ class MainApp:
         self.check_connection()
         self.check_main_flow()
         self.check_reminder()
-        self.gui_app.mainloop()
 
     def refresh_main_screen(self):
         for widget in self.gui_app.winfo_children():
@@ -113,3 +114,4 @@ class MainApp:
 if __name__ == "__main__":
     main = MainApp()
     main.update_Screen()
+    main.gui_app.mainloop()
