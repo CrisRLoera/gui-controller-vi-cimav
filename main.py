@@ -14,6 +14,7 @@ import datetime
 class MainApp:
     def __init__(self):
         self.gui_app = CTk()
+        self.gui_app.attributes("-fullscreen", True)
         self.current_screen = ''
         
         self.file_controller = FileLoadController()

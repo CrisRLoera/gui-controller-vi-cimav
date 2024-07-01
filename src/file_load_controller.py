@@ -9,12 +9,16 @@ class FileLoadController:
         self.current_created_id = self.conf_file["creation_id"]
 
     def loadConf(self):
-        with open ("./conf.json") as file:
+        base_path = os.path.abspath(os.path.dirname(__file__))
+        path = os.path.join(base_path,'../conf.json')
+        with open (path) as file:
             conf_file = json.load(file)
             return conf_file
 
     def updateConf(self):
-        with open ("./conf.json", "w") as file:
+        base_path = os.path.abspath(os.path.dirname(__file__))
+        path = os.path.join(base_path,'../conf.json')
+        with open (path, "w") as file:
             json.dump(self.conf_file,file, indent=8)
 
     def reload(self):
