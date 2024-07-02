@@ -1,4 +1,4 @@
-from customtkinter import CTkLabel, CTkButton, CTkEntry
+from customtkinter import CTkLabel, CTkButton, CTkEntry, CTkFrame
 
 class StateGUI:
     def __init__(self,app,host):
@@ -19,17 +19,22 @@ class StateGUI:
         self.output_state3 = False
 
         self.time_left = None
+        
+        self.left_frame = CTkFrame(app)
+        self.left_frame.grid(row=1,column=0,sticky="nswe")
+        self.right_frame = CTkFrame(app)
+        self.right_frame.grid(row=1,column=2,sticky="nswe")
+        self.program_state_gui = CTkLabel(self.left_frame, text=f'State: {self.program_state}')
+        self.name_gui = CTkLabel(self.left_frame, text=f"Program name: {self.program_name}")
+        self.number_gui = CTkLabel(self.left_frame, text=f"Program number: {self.program_number}")
 
-        self.program_state_gui = CTkLabel(app, text=f'State: {self.program_state}')
-        self.name_gui = CTkLabel(app, text=f"Program name: {self.program_name}")
-        self.number_gui = CTkLabel(app, text=f"Program number: {self.program_number}")
-        self.current_step_gui = CTkLabel(app, text=f"Current step: {self.current_step_number}")
-        self.jumps_left_gui = CTkLabel(app)
-        self.soak_time_left_gui = CTkLabel(app)
+        self.current_step_gui = CTkLabel(self.right_frame, text=f"Current step: {self.current_step_number}")
+        self.jumps_left_gui = CTkLabel(self.right_frame)
+        self.soak_time_left_gui = CTkLabel(self.right_frame)
 
-        self.out1_label = CTkLabel(app)
-        self.out2_label = CTkLabel(app)
-        self.out3_label = CTkLabel(app)
+        self.out1_label = CTkLabel(self.left_frame)
+        self.out2_label = CTkLabel(self.left_frame)
+        self.out3_label = CTkLabel(self.left_frame)
 
         self.run_program_button_gui = CTkButton(app, command=self.run_current_program)
         self.selec_program_button_gui = CTkButton(app, text='Program', command=self.changeProgramScreen)
@@ -40,7 +45,6 @@ class StateGUI:
 
 
     def update(self):
-        self.title.pack()
         self.name_gui.configure(text=f'Program name: {self.program_name}')
         self.number_gui.configure(text=f'Program number: {self.program_number}')
         self.current_step_gui.configure(text=f'Current step: {self.current_step_number}')
@@ -57,24 +61,26 @@ class StateGUI:
         self.out1_label.configure(text=f"Output1: {'ON'if self.output_state1 else 'OFF'}")
         self.out2_label.configure(text=f"Output2: {'ON'if self.output_state2 else 'OFF'}")
         self.out3_label.configure(text=f"Output3: {'ON'if self.output_state3 else 'OFF'}")
+        
         self.program_state_gui.pack()
         self.name_gui.pack()
         self.number_gui.pack()
-        self.current_step_gui.pack()
         self.out1_label.pack()
         self.out2_label.pack()
         self.out3_label.pack()
 
+        self.current_step_gui.pack()
+
         self.program_state_gui.configure(text=f"State: {'Running'if self.program_state else 'Stop'}")
         self.run_program_button_gui.configure(text='Stop'if self.program_state else 'Run')
-        self.run_program_button_gui.pack()
+        self.run_program_button_gui.grid(row=3,column=0, sticky="s")
         self.program_steps = self.current_program['steps']
         if self.program_state == False:
-            self.selec_program_button_gui.pack()
+            self.selec_program_button_gui.grid(row=3,column=1, sticky="s")
         else:
             self.selec_program_button_gui.pack_forget()
         if self.err_no_current_program:
-            self.err_no_crnt_prg_text.pack()
+            self.err_no_crnt_prg_text.grid(row=4,column=0)
         else:
             self.err_no_crnt_prg_text.pack_forget()
 

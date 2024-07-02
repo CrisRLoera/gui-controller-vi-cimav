@@ -8,7 +8,7 @@ from src.RecoveryController import RecoveryController
 from src.network_module.EmailController import EmailController
 from src.config_module.ConfigureGUI import ConfigureGUI
 import nmcli
-from customtkinter import CTk, CTkLabel, CTkButton, CTkToplevel
+from customtkinter import CTk, CTkLabel, CTkButton, CTkToplevel,CTkFrame
 import datetime
 
 class MainApp:
@@ -20,24 +20,28 @@ class MainApp:
         
         self.file_controller = FileLoadController()
         self.recovery_controller = RecoveryController(self)
+        self.state_controller = ControlFlow(self)
+        self.email_controller = EmailController(self)
 
         self.network_screen = NetworkGUI(self.gui_app)
-        self.email_controller = EmailController(self)
+        self.conf_screen = ConfigureGUI(self.gui_app,self)
         self.state_screen = StateGUI(self.gui_app,self)
-        self.state_controller = ControlFlow(self)
         self.editor_screen = EditorGUI(self.gui_app,self)
         self.program_screen = ProgramGUI(self.gui_app,self,self.state_screen,self.editor_screen)
         
 
         self.wifi_status_icon = '󰖪'
         self.current_time = datetime.datetime.now()
-        self.time_hub = CTkLabel(self.gui_app,text=f"{self.current_time}")
-        self.wifi_status_hub = CTkButton(self.gui_app,text=f'{self.wifi_status_icon}', command=self.network_screen.update)
-        self.conf_screen = ConfigureGUI(self.gui_app,self)
-        self.conf_hub = CTkButton(self.gui_app, text="configuration", command=self.conf_screen.update)
+        
+        self.hub_frame = CTkFrame(self.gui_app)
+        self.hub_frame.grid(row=0,column=0,sticky="we",columnspan=3)
+        self.time_hub = CTkLabel(self.hub_frame,text=f"{self.current_time}")
+        self.wifi_status_hub = CTkButton(self.hub_frame,text=f'{self.wifi_status_icon}', command=self.network_screen.update)
+        self.conf_hub = CTkButton(self.hub_frame, text="configuration", command=self.conf_screen.update)
 
         self.current_screen = 'state'
 
+        # Start up rutine
         self.recovery_controller.checkRecovery()
         self.update_Screen()
         self.check_connection()
@@ -49,7 +53,6 @@ class MainApp:
         dev_list = nmcli.device.status()
         for dev in dev_list:
             if dev.state == 'connected' and dev.device_type == 'wifi':
-                print("Connect")
                 self.wifi_status_icon = 'connect'
                 self.update_hub()
                 return True
@@ -85,14 +88,14 @@ class MainApp:
                     self.file_controller.updateConf()
                     self.file_controller.loadConf()
         except:
-            print("Un set reciver")
+            print("Unset reciver")
         self.gui_app.after(300000,self.check_reminder)
 
     def update_Screen(self):
         self.refresh_main_screen()
-        self.wifi_status_hub.pack()
-        self.conf_hub.pack()
-        self.time_hub.pack()
+        self.wifi_status_hub.grid(row=0,column=0)
+        self.conf_hub.grid(row=0, column=1)
+        self.time_hub.grid(row=0, column=2)
         if self.current_screen == 'state':
             self.state_screen.update()
         elif self.current_screen == 'program':
