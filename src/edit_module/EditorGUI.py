@@ -1,27 +1,32 @@
-from customtkinter import CTkLabel, CTkEntry, CTkCheckBox, CTkOptionMenu, CTkButton, CTkToplevel
+from customtkinter import CTkLabel, CTkEntry, CTkCheckBox, CTkOptionMenu, CTkButton, CTkToplevel, CTkFrame
 from tkinter import StringVar, BooleanVar
 class EditorGUI:
-    def __init__(self, app,host):
-        self.title = CTkLabel(app,text="Editor")
+    def __init__(self, data,nav,notify,host):
+        #self.title = CTkLabel(app,text="Editor")
         self.program = None
         self.steps_list = None
-        self.app = app
-        self.name_gui = CTkLabel(app,text='Program Name: ')
+        self.app = host.gui_app
         self.number = None
-        self.name_entry_gui = CTkEntry(app)
+        self.main_frame=CTkFrame(data)
+        self.main_frame.grid_rowconfigure((0,1,2,3,4,5,6,7,8,9),weight=1)
+        self.main_frame.grid_columnconfigure((0,1,2),weight=1)
+        
+        self.name_entry_gui = CTkEntry(self.main_frame)
         self.host = host
         self.current_step = 0
         self.current_type = None
         self.responsible_email = None
         self.interupt_preference = None
         self.step_change_notify = None
+        self.end_preference = None
         self.types = ["SET","SOAK","JUMP","END"]
         self.end_options = ["PowerOFF","Restart","SwitchProgram"]
 
+        self.name_gui = CTkLabel(self.main_frame,text='Program Name: ')
         self.err_name = False
-        self.err_name_exist = CTkLabel(app, text="Error: Program name already exist")
+        self.err_name_exist = CTkLabel(notify, text="Error: Program name already exist")
 
-        self.type_selector = CTkOptionMenu(app,values=self.types, command=self.select_type)
+        self.type_selector = CTkOptionMenu(self.main_frame,values=self.types, command=self.select_type)
         self.type_selector.set(self.types[0])
 
         self.outputCheck1 = BooleanVar()
@@ -29,31 +34,37 @@ class EditorGUI:
         self.outputCheck3 = BooleanVar()
 
         self.set_email_enable = BooleanVar()
-        self.advance_button = CTkButton(app, text="Advance", command=self.open_advance)
+        self.advance_button = CTkButton(nav, text="Advanced", command=self.open_advance)
 
-        self.output1 = CTkCheckBox(app,text="Output1", variable=self.outputCheck1)
-        self.output2 = CTkCheckBox(app,text="Output2", variable=self.outputCheck2)
-        self.output3 = CTkCheckBox(app,text="Output3", variable=self.outputCheck3)
+        self.output1 = CTkCheckBox(self.main_frame,text="Output1", variable=self.outputCheck1)
+        self.output2 = CTkCheckBox(self.main_frame,text="Output2", variable=self.outputCheck2)
+        self.output3 = CTkCheckBox(self.main_frame,text="Output3", variable=self.outputCheck3)
 
-        self.soak_entry = CTkEntry(app)
-
+        # Falta texto
+        self.soak_time_txt_gui = CTkLabel(self.main_frame, text="Soak duration in minutes")
+        self.soak_entry = CTkEntry(self.main_frame)
+        
+        
         self.jump_err1 = False
-        self.err_jump_previus_n_al = CTkLabel(app, text="Error: Step selection not allowed, the current step has to be larger than the selected step")
-        self.jump_times = CTkEntry(app)
-        self.jump_step = CTkEntry(app)
+        self.err_jump_previus_n_al = CTkLabel(notify, text="Error: Step selection not allowed, the current step has to be larger than the selected step")
+        # Falta texto
+        self.jump_times_txt_gui = CTkLabel(self.main_frame, text="Repetition number")
+        self.jump_times = CTkEntry(self.main_frame)
+        self.jump_step_txt_gui = CTkLabel(self.main_frame, text="Step to jump")
+        self.jump_step = CTkEntry(self.main_frame)
        
-        self.current_step_text = CTkLabel(app)
+        self.current_step_text = CTkLabel(self.main_frame)
 
-        self.end_options_gui = CTkOptionMenu(app, values=self.end_options, command=self.end_program_select)
-        self.end_switch_prog = CTkOptionMenu(app, command=self.end_program_select)
+        self.end_options_gui = CTkOptionMenu(self.main_frame, values=self.end_options, command=self.end_program_select)
+        self.end_switch_prog = CTkOptionMenu(self.main_frame, command=self.end_program_select)
 
-        self.next_step_button = CTkButton(app,text="Next", command=self.next_step)
-        self.back_step_button = CTkButton(app,text="Back", command=self.back_step)
-        self.add_step_button = CTkButton(app, text="Add Step", command=self.add_step)
-        self.delete_step_button = CTkButton(app, text="Delete Step", command=self.delete_current_step)
-        self.save_button = CTkButton(app,text="Save Program", command=self.save_program)
-        self.cancel_button = CTkButton(app,text="Cancel Edition", command=self.cancel_edition)
-        self.err_delet_first_step = CTkLabel(app, text="Error: Can´t delete first step")
+        self.next_step_button = CTkButton(self.main_frame,text="Next", command=self.next_step)
+        self.back_step_button = CTkButton(self.main_frame,text="Back", command=self.back_step)
+        self.add_step_button = CTkButton(self.main_frame, text="Add Step", command=self.add_step)
+        self.delete_step_button = CTkButton(self.main_frame, text="Delete Step", command=self.delete_current_step)
+        self.save_button = CTkButton(nav,text="Save Program", command=self.save_program)
+        self.cancel_button = CTkButton(nav,text="Cancel Edition", command=self.cancel_edition)
+        self.err_delet_first_step = CTkLabel(notify, text="Error: Can´t delete first step")
 
     def open_advance(self):
         advance = CTkToplevel(self.app)
@@ -61,6 +72,7 @@ class EditorGUI:
         advance_email_entry = CTkEntry(advance)
         step_change = CTkCheckBox(advance,text="Let me know every step change")
         interruption = CTkCheckBox(advance,text="Notify me of interruptions")
+        end_notify = CTkCheckBox(advance,text="Notify at the end of the program")
 
         def update_email():
             if self.set_email_enable.get():
@@ -68,6 +80,7 @@ class EditorGUI:
                 advance_email_entry.pack()
                 step_change.pack()
                 interruption.pack()
+                end_notify.pack()
                 confirm_button.pack_forget()
                 confirm_button.pack()
             else:
@@ -75,37 +88,43 @@ class EditorGUI:
                 advance_email_entry.pack_forget()
                 step_change.pack_forget()
                 interruption.pack_forget()
+                end_notify.pack_forget()
                 confirm_button.pack_forget()
                 confirm_button.pack()
         send_me = CTkCheckBox(advance,text="Send me and email", variable=self.set_email_enable, command=update_email)
         send_me.pack()
 
-        def confirm(email, pref1,pref2):  
+        def confirm(email, pref1,pref2,pref3):  
             if self.set_email_enable.get():
                 self.responsible_email = email
                 self.interupt_preference = pref1
                 self.step_change_notify = pref2
+                self.end_preference = pref3
                 print(self.interupt_preference)
                 print(self.step_change_notify)
                 print(self.responsible_email)
+                print(self.end_preference)
             else:
                 self.reset_preferences()
             advance.destroy()
 
-        confirm_button = CTkButton(advance, text="Confirm", command=lambda: confirm(advance_email_entry.get(),step_change.get(),interruption.get()))
+        confirm_button = CTkButton(advance, text="Confirm", command=lambda: confirm(advance_email_entry.get(),step_change.get(),interruption.get(),end_notify.get()))
         confirm_button.pack()
+
     def reset_preferences(self):
         self.responsible_email = None
         self.interupt_preference = None
         self.step_cahnge_notify = None
+        self.end_preference = None
 
     def update(self):
-        self.title.pack()
+        #self.title.pack()
+        self.main_frame.grid(row=0,column=0,columnspan=2,sticky="nswe")
+        self.name_gui.grid(row=0,column=1)
+        self.name_entry_gui.grid(row=1,column=1)
         self.current_step_text.configure(text=f'Current step: {self.current_step}')
-        self.current_step_text.pack()
-        self.name_gui.pack()
-        self.name_entry_gui.pack()
-        self.type_selector.pack()
+        self.current_step_text.grid(row=2,column=1)
+        self.type_selector.grid(row=3,column=1)
         if self.current_type == 'SET':
             self.showSET()
         elif self.current_type == 'SOAK':
@@ -114,17 +133,17 @@ class EditorGUI:
             self.showJUMP()
         elif self.current_type == 'END':
             self.showEND()
-        self.next_step_button.pack()
-        self.back_step_button.pack()
-        self.add_step_button.pack()
-        self.delete_step_button.pack()
-        self.advance_button.pack()
-        self.save_button.pack()
-        self.cancel_button.pack()
+        self.next_step_button.grid(row=2,column=2)
+        self.back_step_button.grid(row=2,column=0)
+        self.add_step_button.grid(row=8,column=1)
+        self.delete_step_button.grid(row=9,column=1)
+        self.advance_button.grid(row=0,column=1)
+        self.save_button.grid(row=0,column=0)
+        self.cancel_button.grid(row=0,column=2)
         if self.err_name:
-            self.err_name_exist.pack()
+            self.err_name_exist.grid(row=0,column=0)
         else:
-            self.err_name_exist.pack_forget()
+            self.err_name_exist.grid_forget()
 
     def add_step(self):
         self.steps_list.append({})
@@ -136,9 +155,9 @@ class EditorGUI:
             if self.steps_list[self.current_step]!= {}:
                 self.current_type = self.steps_list[self.current_step]['type']
             self.refresh()
-            self.err_delet_first_step.pack_forget()
+            self.err_delet_first_step.grid_forget()
         else:
-            self.err_delet_first_step.pack()
+            self.err_delet_first_step.grid(row=0,column=0)
             print("No hay elemetos suficientes")
 
 
@@ -172,6 +191,7 @@ class EditorGUI:
             self.program['steps']=self.steps_list
             self.program['responsible']= self.responsible_email
             self.program['interrupt'] = self.interupt_preference
+            self.program['end notify'] = self.end_preference
             self.program['step change notify'] = self.step_change_notify
             self.host.file_controller.saveProgram(self.program['number'],self.program)
             self.program = None
@@ -307,25 +327,28 @@ class EditorGUI:
                 self.loadStepConf()
 
     def showSET(self):
-        self.output1.pack()
-        self.output2.pack()
-        self.output3.pack()
+        self.output1.grid(row=4,column=1)
+        self.output2.grid(row=5,column=1)
+        self.output3.grid(row=6,column=1)
 
     def showSOAK(self):
-        self.soak_entry.pack()
+        self.soak_time_txt_gui.grid(row=4,column=1)
+        self.soak_entry.grid(row=5,column=1)
 
     def showJUMP(self):
-        self.jump_times.pack()
-        self.jump_step.pack()
+        self.jump_times_txt_gui.grid(row=4,column=1)
+        self.jump_times.grid(row=5,column=1)
+        self.jump_step_txt_gui.grid(row=6,column=1)
+        self.jump_step.grid(row=7,column=1)
         if self.jump_err1:
-            self.err_jump_previus_n_al.pack()
+            self.err_jump_previus_n_al.grid(row=0,column=0)
         else:
-            self.err_jump_previus_n_al.pack_forget()
+            self.err_jump_previus_n_al.grid_forget()
 
     def showEND(self):
-        self.end_options_gui.pack()
+        self.end_options_gui.grid(row=4,column=1)
         if self.steps_list[self.current_step]['action']=='SwitchProgram':
             self.end_switch_prog.configure(values=[name['name'] for name in self.host.file_controller.programs_list])
-            self.end_switch_prog.pack()
+            self.end_switch_prog.grid(row=5,column=1)
         else:
-            self.end_switch_prog.pack_forget()
+            self.end_switch_prog.grid_forget()

@@ -16,25 +16,41 @@ class MainApp:
         self.gui_app = CTk()
         self.gui_app.geometry("800x480")
 #        self.gui_app.attributes("-fullscreen", True)
+        self.gui_app.grid_columnconfigure((0), weight=1)
+        self.gui_app.grid_rowconfigure((0,2,3), weight=0)
+        self.gui_app.grid_rowconfigure((1), weight=1)
         self.current_screen = ''
         
         self.file_controller = FileLoadController()
         self.recovery_controller = RecoveryController(self)
         self.state_controller = ControlFlow(self)
         self.email_controller = EmailController(self)
-
         self.network_screen = NetworkGUI(self.gui_app)
+
         self.conf_screen = ConfigureGUI(self.gui_app,self)
-        self.state_screen = StateGUI(self.gui_app,self)
-        self.editor_screen = EditorGUI(self.gui_app,self)
-        self.program_screen = ProgramGUI(self.gui_app,self,self.state_screen,self.editor_screen)
+        self.data_frame = CTkFrame(self.gui_app)
+        self.data_frame.grid_columnconfigure((0,1),weight=1)
+        self.data_frame.grid_rowconfigure((0),weight=1)
+
+        self.nav_frame = CTkFrame(self.gui_app)
+        self.nav_frame.grid_columnconfigure((0,1,2,3),weight=1)
+        self.nav_frame.grid_rowconfigure((0),weight=1)
+
+        self.notify_frame = CTkFrame(self.gui_app)
+        self.notify_frame.grid_columnconfigure((0),weight=1)
+        self.notify_frame.grid_rowconfigure((0),weight=1)
+
+        self.state_screen = StateGUI(self.data_frame,self.nav_frame,self.notify_frame,self)
+        self.editor_screen = EditorGUI(self.data_frame,self.nav_frame, self.notify_frame,self)
+        self.program_screen = ProgramGUI(self.data_frame,self.nav_frame,self.notify_frame,self,self.state_screen,self.editor_screen)
         
 
         self.wifi_status_icon = '󰖪'
         self.current_time = datetime.datetime.now()
         
         self.hub_frame = CTkFrame(self.gui_app)
-        self.hub_frame.grid(row=0,column=0,sticky="we",columnspan=3)
+        self.hub_frame.grid_columnconfigure((0,1,2,3),weight=1)
+        self.hub_frame.grid_rowconfigure((0),weight=1)
         self.time_hub = CTkLabel(self.hub_frame,text=f"{self.current_time}")
         self.wifi_status_hub = CTkButton(self.hub_frame,text=f'{self.wifi_status_icon}', command=self.network_screen.update)
         self.conf_hub = CTkButton(self.hub_frame, text="configuration", command=self.conf_screen.update)
@@ -93,9 +109,16 @@ class MainApp:
 
     def update_Screen(self):
         self.refresh_main_screen()
+        self.hub_frame.grid(row=0,column=0,sticky="we")
+        self.data_frame.grid(row=1,column=0,sticky="nswe")
+        self.nav_frame.grid(row=2,column=0,sticky="we")
+        self.notify_frame.grid(row=3,column=0,sticky="we")
+
         self.wifi_status_hub.grid(row=0,column=0)
         self.conf_hub.grid(row=0, column=1)
-        self.time_hub.grid(row=0, column=2)
+        self.time_hub.grid(row=0, column=2, columnspan=2)
+
+        
         if self.current_screen == 'state':
             self.state_screen.update()
         elif self.current_screen == 'program':
@@ -108,8 +131,18 @@ class MainApp:
         for widget in self.gui_app.winfo_children():
             if isinstance(widget, CTkToplevel):
                 pass
+            elif isinstance(widget, CTkFrame):
+                self.clear_frame(widget)
             else:
-                widget.pack_forget()
+                widget.grid_forget()
+
+    def clear_frame(self, frame):
+        for widget in frame.winfo_children():
+            if isinstance(widget, CTkFrame):
+                self.clear_frame(widget)
+            else:
+                widget.grid_forget()
+        frame.grid_forget()
 
     def update_hub(self):
         self.wifi_status_hub.configure(text=self.wifi_status_icon)

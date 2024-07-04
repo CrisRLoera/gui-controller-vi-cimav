@@ -1,5 +1,5 @@
 {
-        "creation_id": 15,
+        "creation_id": 16,
         "maintenance": "",
         "host": "listas.cimav.edu.mx",
         "port": "25",
@@ -9,10 +9,16 @@
                         "name": "General",
                         "use limit": 450,
                         "output": "output1",
-			"last reminder": null
+                        "last reminder": null
+                },
+                {
+                        "name": "Bandas",
+                        "use limit": 450,
+                        "output": "output1",
+                        "last reminder": null
                 }
         ],
-	"output1 on time":0,
-	"output2 on time":0,
-	"output3 on time":0
+        "output1 on time": 0,
+        "output2 on time": 0,
+        "output3 on time": 0
 }

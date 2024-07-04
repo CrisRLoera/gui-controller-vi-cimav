@@ -20,12 +20,14 @@ class NetworkGUI:
 
     def update(self):
         self.network_view = CTkToplevel(self.app)
-        title = CTkLabel(self.network_view, text='Net')
+        title = CTkLabel(self.network_view, text='Network')
         ssid_combo = CTkComboBox(self.network_view, values=self.ssid_list, command=self.selected_ssid)
         ssid_combo.set('')
-        pwd_entry = CTkEntry(self.network_view)
+        pwd_txt = CTkLabel(self.network_view,text="Password")
+        pwd_entry = CTkEntry(self.network_view,show="*")
         connect_button = CTkButton(self.network_view, text='Connect', command=lambda:self.connect(pwd_entry))
         title.pack()
         ssid_combo.pack()
+        pwd_txt.pack()
         pwd_entry.pack()
         connect_button.pack()
