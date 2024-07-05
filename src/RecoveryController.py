@@ -54,6 +54,7 @@ class RecoveryController:
         try:
             with open('./recovery.json', 'r') as file:
                 self.file = json.load(file)
+                print(self.file)
         except FileNotFoundError:
             self.gen_empty_recovery_file()
 
@@ -79,5 +80,8 @@ class RecoveryController:
                     self.host.state_screen.time_left = self.file['time left']
                     self.host.state_controller.task_num = self.file['task num']
                     self.host.state_controller.recoverTask(self.file['stack'])
-                    self.host.state_screen.changeCurrentProgram()
-                    self.host.state_screen.run_current_program()
+                    try:
+                        self.host.state_screen.changeCurrentProgram()
+                        self.host.state_screen.run_current_program()
+                    except:
+                        print("Recovery is not posible")

@@ -81,6 +81,17 @@ class ControlFlow:
         self.output3_on_time = None
 
     def checkCurrentFlow(self, step):
+            if len(self.host.state_screen.program_steps) > step:
+                print("apagando")
+                self.host.state_screen.turnOff()
+                self.host.state_screen.current_program = self.host.file_controller.getProgram(self.host.state_Screen.program_name)
+                self.host.state_screen.current_step_number = 0
+                self.host.state_screen.changeCurrentProgram()
+                self.stack = [None]
+                self.current = None
+                self.task_num = 0
+                self.stack_save = [None]
+                self.host.state_screen.program_state = False 
             if self.host.state_screen.program_steps[step]== None:
                 return 0
             self.current = self.host.state_screen.program_steps[step]

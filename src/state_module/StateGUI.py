@@ -109,6 +109,7 @@ class StateGUI:
         self.program_jumps_left = None
         self.soak_time_left = None
         self.program_state = False
+        self.current_step_number = 0
         self.host.update_Screen()
 
 
