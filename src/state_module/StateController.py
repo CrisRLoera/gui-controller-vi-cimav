@@ -61,11 +61,11 @@ class ControlFlow:
         self.output1_pin=16
         self.output2_pin=20
         self.output3_pin=21
-
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.output1_pin, GPIO.OUT, initial=GPIO.HIGH)
-        GPIO.setup(self.output1_pin, GPIO.OUT, initial=GPIO.HIGH)
-        GPIO.setup(self.output1_pin, GPIO.OUT, initial=GPIO.HIGH)
+        
+        #GPIO.setmode(GPIO.BCM)
+        #GPIO.setup(self.output1_pin, GPIO.OUT, initial=GPIO.HIGH)
+        #GPIO.setup(self.output2_pin, GPIO.OUT, initial=GPIO.HIGH)
+        #GPIO.setup(self.output3_pin, GPIO.OUT, initial=GPIO.HIGH)
         self.stack = [None]
         self.host = host
         self.current = None
@@ -91,19 +91,20 @@ class ControlFlow:
                 if self.stack[self.task_num] == None:
                     self.stack[self.task_num] = SET(self.current["output1"],self.current["output2"],self.current["output3"],self)
                     self.stack[self.task_num].change()
+                    '''
                     if self.output1:
-                        GPIO.output(self.output1,GPIO.HIGH)
+                        GPIO.output(self.output1_pin,GPIO.HIGH)
                     else:
-                        GPIO.output(self.output1,GPIO.LOW)
+                        GPIO.output(self.output1_pin,GPIO.LOW)
                     if self.output2:
-                        GPIO.output(self.output2,GPIO.HIGH)
+                        GPIO.output(self.output2_pin,GPIO.HIGH)
                     else:
-                        GPIO.output(self.output2,GPIO.LOW)
+                        GPIO.output(self.output2_pin,GPIO.LOW)
                     if self.output3:
-                        GPIO.output(self.output3,GPIO.HIGH)
+                        GPIO.output(self.output3_pin,GPIO.HIGH)
                     else:
-                        GPIO.output(self.output3,GPIO.LOW)
-
+                        GPIO.output(self.output3_pin,GPIO.LOW)
+                    '''
                     self.host.state_screen.current_step_number += 1
                     self.stack[self.task_num] = None
                     if self.host.isConnected() and self.host.state_screen.current_program["step change notify"] == 1:
@@ -153,13 +154,19 @@ class ControlFlow:
                         self.task_num += 1
 
             elif self.current["type"] == "END":
-                print(self.task_num)
-                print(self.stack)
                 if self.stack[self.task_num] == None:
                     self.stack[self.task_num] = END(self.current['action'],self.current['program'])
                 elif self.stack[self.task_num].action == 'PowerOFF':
                     print("apagando")
                     self.host.state_screen.turnOff()
+                    self.host.state_screen.current_program = self.host.file_controller.getProgram(self.current['program'])
+                    self.host.state_screen.current_step_number = 0
+                    self.host.state_screen.changeCurrentProgram()
+                    self.stack = [None]
+                    self.current = None
+                    self.task_num = 0
+                    self.stack_save = [None]
+                    self.host.state_screen.program_state = False
                     if self.host.isConnected() and self.host.state_screen.current_program["end notify"] == 1:
                         self.host.email_controller.send_program_finalize_email(self.host.state_screen.current_program ["responsible"],"PowerOFF")
                 elif self.stack[self.task_num].action == 'Restart':

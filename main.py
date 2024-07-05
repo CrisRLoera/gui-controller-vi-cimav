@@ -94,7 +94,7 @@ class MainApp:
             self.state_controller.checkCurrentFlow(self.state_screen.current_step_number)
             self.state_controller.trackOutputs()
             self.refresh_main_screen()
-            self.state_screen.update()
+            self.update_Screen()
         self.current_time = datetime.datetime.now()
         self.update_hub()
         self.gui_app.after(1000, self.check_main_flow)

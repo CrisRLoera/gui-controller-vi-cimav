@@ -98,16 +98,18 @@ class StateGUI:
         if self.program_state == True:
             self.host.recovery_controller.gen_empty_recovery_file()
             self.program_state = False
-            self.update()
+            self.host.update_Screen()
         else:
             self.program_state = True
-            self.update()
+            self.host.update_Screen()
             self.host.recovery_controller.gen_recovery_file()
 
     def turnOff(self):
         self.host.recovery_controller.gen_empty_recovery_file()
+        self.program_jumps_left = None
+        self.soak_time_left = None
         self.program_state = False
-        self.update()
+        self.host.update_Screen()
 
 
     def changeOutputs(self,out1,out2,out3):
@@ -121,16 +123,19 @@ class StateGUI:
         self.host.update_Screen()
 
     def changeCurrentProgram(self):
-        self.program_steps = self.current_program['steps']
-        if self.current_program['steps'] != None:
-            if self.current_step_number != None:
-                self.current_step = self.current_program['steps'][self.current_step_number]
-            else:
-                self.current_step = self.current_program['steps'][0]
-                self.current_step_number = self.program_steps.index(self.current_step)
-        self.program_state = False
-        self.program_number = self.current_program['number']
-        self.program_name = self.current_program['name']
-        if self.current_step['type']=='JUMP' and self.program_jumps_left == None:
-            self.program_jumps_left = self.current_step['times']
+        print("Current program")
+        print(self.current_program)
+        if self.current_program != None:
+            if self.current_program['steps'] != None:
+                self.program_steps = self.current_program['steps']
+                if self.current_step_number != None:
+                    self.current_step = self.current_program['steps'][self.current_step_number]
+                else:
+                    self.current_step = self.current_program['steps'][0]
+                    self.current_step_number = self.program_steps.index(self.current_step)
+            self.program_state = False
+            self.program_number = self.current_program['number']
+            self.program_name = self.current_program['name']
+            if self.current_step['type']=='JUMP' and self.program_jumps_left == None:
+                self.program_jumps_left = self.current_step['times']
             

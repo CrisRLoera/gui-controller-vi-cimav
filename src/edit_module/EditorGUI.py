@@ -282,7 +282,7 @@ class EditorGUI:
             if self.steps_list[old]['action']=='SwitchProgram':
                 self.steps_list[old]['program']=self.end_switch_prog.get()
             else:
-                self.steps_list[old]['program']=None
+                self.steps_list[old]['program']=self.name_entry_gui.get()
         elif self.current_type == None:
             pass
 
