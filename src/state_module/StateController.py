@@ -1,4 +1,6 @@
 import datetime
+#import RPi.GPIO as GPIO
+
 class SOAK:
     def __init__(self,time):
         print("Created")
@@ -41,7 +43,27 @@ class SET:
     def change(self):
         self.host.host.state_screen.changeOutputs(self.output1,self.output2,self.output3)
         self.host.changeOutputs(self.output1,self.output2, self.output3)
-        
+        self.output1_pin=16
+        self.output2_pin=20
+        self.output3_pin=21
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(self.output1_pin, GPIO.OUT, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.output2_pin, GPIO.OUT, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.output3_pin, GPIO.OUT, pull_up_down=GPIO.PUD_UP)
+        if self.output1:
+            GPIO.output(self.output1,GPIO.HIGH)
+        else:
+            GPIO.output(self.output1,GPIO.LOW)
+        if self.output2:
+            GPIO.output(self.output2,GPIO.HIGH)
+        else:
+            GPIO.output(self.output2,GPIO.LOW)
+        if self.output3:
+            GPIO.output(self.output3,GPIO.HIGH)
+        else:
+            GPIO.output(self.output3,GPIO.LOW)
+
+
 
 class END:
     def __init__(self,action,prog):
@@ -245,6 +267,6 @@ class ControlFlow:
             self.output3_on_time = datetime.datetime.now()
         elif self.output3 == False:
             self.output3_on_time = None
-        self.host.host.file_controller.updateConf()
-        self.host.host.file_controller.loadConf()
+        self.host.file_controller.updateConf()
+        self.host.file_controller.loadConf()
 
