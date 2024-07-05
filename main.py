@@ -6,7 +6,7 @@ from src.edit_module.EditorGUI import EditorGUI
 from src.file_load_controller import FileLoadController
 from src.RecoveryController import RecoveryController
 from src.network_module.EmailController import EmailController
-from src.config_module.ConfigureGUI import ConfigureGUI
+from src.config_module.ConfigurationGUI import ConfigurationGUI
 import nmcli
 from customtkinter import CTk, CTkLabel, CTkButton, CTkToplevel,CTkFrame
 import datetime
@@ -25,21 +25,21 @@ class MainApp:
         self.recovery_controller = RecoveryController(self)
         self.state_controller = ControlFlow(self)
         self.email_controller = EmailController(self)
-        self.network_screen = NetworkGUI(self.gui_app)
 
-        self.conf_screen = ConfigureGUI(self.gui_app,self)
         self.data_frame = CTkFrame(self.gui_app)
         self.data_frame.grid_columnconfigure((0,1),weight=1)
         self.data_frame.grid_rowconfigure((0),weight=1)
 
         self.nav_frame = CTkFrame(self.gui_app)
-        self.nav_frame.grid_columnconfigure((0,1,2,3),weight=1)
+        self.nav_frame.grid_columnconfigure((0,1,2),weight=1)
         self.nav_frame.grid_rowconfigure((0),weight=1)
 
         self.notify_frame = CTkFrame(self.gui_app)
         self.notify_frame.grid_columnconfigure((0),weight=1)
         self.notify_frame.grid_rowconfigure((0),weight=1)
 
+        self.conf_screen = ConfigurationGUI(self.data_frame,self.nav_frame,self)
+        self.network_screen = NetworkGUI(self.data_frame, self.nav_frame, self)
         self.state_screen = StateGUI(self.data_frame,self.nav_frame,self.notify_frame,self)
         self.editor_screen = EditorGUI(self.data_frame,self.nav_frame, self.notify_frame,self)
         self.program_screen = ProgramGUI(self.data_frame,self.nav_frame,self.notify_frame,self,self.state_screen,self.editor_screen)
@@ -52,8 +52,8 @@ class MainApp:
         self.hub_frame.grid_columnconfigure((0,1,2,3),weight=1)
         self.hub_frame.grid_rowconfigure((0),weight=1)
         self.time_hub = CTkLabel(self.hub_frame,text=f"{self.current_time}")
-        self.wifi_status_hub = CTkButton(self.hub_frame,text=f'{self.wifi_status_icon}', command=self.network_screen.update)
-        self.conf_hub = CTkButton(self.hub_frame, text="configuration", command=self.conf_screen.update)
+        self.wifi_status_hub = CTkButton(self.hub_frame,text=f'{self.wifi_status_icon}', command=self.changeToNetworkScreen)
+        self.conf_hub = CTkButton(self.hub_frame, text="configuration", command=self.change_conf)
 
         self.current_screen = 'state'
 
@@ -63,6 +63,14 @@ class MainApp:
         self.check_connection()
         self.check_main_flow()
         self.check_reminder()
+
+    def changeToNetworkScreen(self):
+        self.current_screen = 'network'
+        self.update_Screen()
+
+    def change_conf(self):
+        self.current_screen = 'conf'
+        self.update_Screen()
 
     def isConnected(self):
         nmcli.disable_use_sudo()
@@ -123,8 +131,12 @@ class MainApp:
             self.state_screen.update()
         elif self.current_screen == 'program':
             self.program_screen.update()
+        elif self.current_screen == 'network':
+            self.network_screen.update()
         elif self.current_screen == 'editor':
             self.editor_screen.update()
+        elif self.current_screen == 'conf':
+            self.conf_screen.update()
         
 
     def refresh_main_screen(self):
