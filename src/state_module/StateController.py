@@ -43,25 +43,8 @@ class SET:
     def change(self):
         self.host.host.state_screen.changeOutputs(self.output1,self.output2,self.output3)
         self.host.changeOutputs(self.output1,self.output2, self.output3)
-        self.output1_pin=16
-        self.output2_pin=20
-        self.output3_pin=21
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.output1_pin, GPIO.OUT, pull_up_down=GPIO.PUD_UP)
-        GPIO.setup(self.output2_pin, GPIO.OUT, pull_up_down=GPIO.PUD_UP)
-        GPIO.setup(self.output3_pin, GPIO.OUT, pull_up_down=GPIO.PUD_UP)
-        if self.output1:
-            GPIO.output(self.output1,GPIO.HIGH)
-        else:
-            GPIO.output(self.output1,GPIO.LOW)
-        if self.output2:
-            GPIO.output(self.output2,GPIO.HIGH)
-        else:
-            GPIO.output(self.output2,GPIO.LOW)
-        if self.output3:
-            GPIO.output(self.output3,GPIO.HIGH)
-        else:
-            GPIO.output(self.output3,GPIO.LOW)
+        
+        
 
 
 
@@ -75,11 +58,20 @@ class END:
 
 class ControlFlow:
     def __init__(self,host):
+        self.output1_pin=16
+        self.output2_pin=20
+        self.output3_pin=21
+
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.output1_pin, GPIO.OUT, initial=GPIO.HIGH)
+        GPIO.setup(self.output1_pin, GPIO.OUT, initial=GPIO.HIGH)
+        GPIO.setup(self.output1_pin, GPIO.OUT, initial=GPIO.HIGH)
         self.stack = [None]
         self.host = host
         self.current = None
         self.task_num = 0
         self.stack_save = [None]
+
 
         self.output1 = False
         self.output1_on_time = None
@@ -99,6 +91,19 @@ class ControlFlow:
                 if self.stack[self.task_num] == None:
                     self.stack[self.task_num] = SET(self.current["output1"],self.current["output2"],self.current["output3"],self)
                     self.stack[self.task_num].change()
+                    if self.output1:
+                        GPIO.output(self.output1,GPIO.HIGH)
+                    else:
+                        GPIO.output(self.output1,GPIO.LOW)
+                    if self.output2:
+                        GPIO.output(self.output2,GPIO.HIGH)
+                    else:
+                        GPIO.output(self.output2,GPIO.LOW)
+                    if self.output3:
+                        GPIO.output(self.output3,GPIO.HIGH)
+                    else:
+                        GPIO.output(self.output3,GPIO.LOW)
+
                     self.host.state_screen.current_step_number += 1
                     self.stack[self.task_num] = None
                     if self.host.isConnected() and self.host.state_screen.current_program["step change notify"] == 1:
