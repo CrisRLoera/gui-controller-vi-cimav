@@ -85,3 +85,14 @@ class RecoveryController:
                         self.host.state_screen.run_current_program()
                     except:
                         print("Recovery is not posible")
+                        self.host.state_screen.current_program = {'number': None, 'name': None, 'steps': None}
+                        self.host.state_screen.current_step_number = None
+                        self.host.state_screen.output_state1 = False
+                        self.host.state_screen.output_state2 = False
+                        self.host.state_screen.output_state3 = False
+                        self.host.state_screen.program_jumps_left = None
+                        self.host.state_screen.time_left = None
+                        self.host.state_controller.task_num = 0 
+                        self.stack = [None]
+                        self.host.update_Screen()
+

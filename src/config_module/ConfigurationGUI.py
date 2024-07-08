@@ -2,13 +2,15 @@ from customtkinter import CTkToplevel, CTkLabel, CTkEntry, CTkButton, CTkOptionM
 from tkinter import StringVar
 
 class Device:
-    def __init__(self,app,host,name,limit,output,last):
+    def __init__(self,app,host,name,limit,output,last,time):
         self.name = name
         self.limit = limit
         self.output = output
         self.host = host
+        self.time = time
         self.output_list = ["output1","output2","output3"]
         self.last = last
+        self.onDeleted = False
 
     def getValues(self):
         return self.name,self.limit,self.output
@@ -17,18 +19,13 @@ class Device:
         self.onDeleted = True
         self.host.gen_pack()
 
-    def mainteined(self):
+    def mainteined(self,i):
         try:
             for index,device in enumerate(self.host.devices):
                 print(index,device)
-                if self.name_label.cget("text") == device.name and self.limit_label.cget("text")== device.limit and self.assign_output_label.cget("text") == device.output:
+                if index == i:
                     print("get")
-                    if device['output']=='output1':
-                        self.host.host.file_controller.conf_file['output1 on time']:0
-                    if device['output']=='output2':
-                        self.host.host.file_controller.conf_file['output2 on time']:0
-                    if device['output']=='output3':
-                        self.host.host.file_controller.conf_file['output3 on time']:0
+                    self.host.host.file_controller.conf_file['maintenance devices'][index]["output on time"]=0
                     self.host.host.file_controller.conf_file['maintenance devices'][index]['last reminder'] = None
                     self.host.host.file_controller.updateConf()
                     self.host.host.file_controller.loadConf()
@@ -38,7 +35,6 @@ class Device:
 class ConfigurationGUI:
     def __init__ (self,data,nav,host):
         self.host = host
-        self.conf_view = None
         self.edition_mode = False
         self.output_list = ["output1","output2","output3"]
         self.conf_file = self.host.file_controller.conf_file
@@ -63,7 +59,7 @@ class ConfigurationGUI:
 
         self.devices_label = CTkLabel(self.dev_view, text="Devices")
         self.edit_mode = CTkButton(self.dev_view,text="edit", command=self.enable_edit_mode)
-        self.add_device = CTkButton(self.dev_view,text="add", command=self.add_device)
+        self.add_device_button = CTkButton(self.dev_view,text="add", command=self.add_device)
         self.exit_edit_mode = CTkButton(self.dev_view,text="cancel", command=self.disable_edit_mode)
         
         self.device_name_label=CTkLabel(self.dev_view,text="Device name:")
@@ -79,34 +75,46 @@ class ConfigurationGUI:
         self.device_output_option = CTkOptionMenu(self.dev_view,values=self.output_list) 
 
         self.save_device_button = CTkButton(self.dev_view,text="save this device", command=self.save_device)
+        self.maintenance_button = CTkButton(self.dev_view,text="Done",command=self.maintenance)
         self.save_edit_mode = CTkButton(nav,text="save all changes", command=self.save_edition)
         self.close_button = CTkButton(nav,text="Close",command=self.close_window)
 
 
         self.current_device=0
+        
+        self.get_devices()
     
 
+    def maintenance(self):
+        self.devices[self.current_device].mainteined(self.current_device)
 
     def update(self):
+        self.smtp_entry.configure(textvariable=StringVar(value=''))
         self.smtp_entry.insert(0,self.conf_file['host'])
+        self.port_entry.configure(textvariable=StringVar(value=''))
         self.port_entry.insert(0,self.conf_file['port']) 
+        self.sender_entry.configure(textvariable=StringVar(value=''))
         self.sender_entry.insert(0,self.conf_file['sender'])
         
         self.maintenance_email_entry.insert(0,self.conf_file['maintenance'])
         
-        self.get_devices()
         
 
         self.gen_pack()
 
     def get_devices(self):
         self.devices = []
-        for device in self.host.file_controller.conf_file["maintenance devices"]:
-            self.devices.append(Device(self.conf_view,self,device['name'],device['use limit'],device['output'],device['last reminder']))
-
+        try:
+            for device in self.host.file_controller.conf_file["maintenance devices"]:
+                self.devices.append(Device(self.conf_view,self,device['name'],device['use limit'],device['output'],device['last reminder'],device['output on time']))
+        except:
+            self.devices.append(Device(self.conf_view,self,"",0,"",None,0))
+            print("No devices available")
     def close_window(self):
         self.edition_mode = False
-        self.main_app.destroy()
+        self.get_devices()
+        self.host.current_screen = "state"
+        self.host.update_Screen()
 
     def enable_edit_mode(self):
         self.edition_mode = True
@@ -114,7 +122,6 @@ class ConfigurationGUI:
 
     def disable_edit_mode(self):
         self.edition_mode = False
-        self.get_devices()
         self.gen_pack()
 
     def save_device(self):
@@ -122,6 +129,7 @@ class ConfigurationGUI:
         self.devices[self.current_device].limit=self.device_lT_entry.get()
         self.devices[self.current_device].output=self.device_output_option.get()
         self.disable_edit_mode()
+        self.host.update_Screen()
 
     
     def save_edition(self):
@@ -143,7 +151,7 @@ class ConfigurationGUI:
         self.gen_pack()
 
     def add_device(self):
-        self.devices.append(Device(self.conf_view,self.host,'','','',None))
+        self.devices.append(Device(self.conf_view,self.host,'','','',None,0))
         self.gen_pack()
 
     def gen_pack(self):
@@ -208,8 +216,11 @@ class ConfigurationGUI:
             self.gen_pack()
 
     def e_view(self):
+        print("On edition view")
         self.edit_mode.grid_forget()
+        self.maintenance_button.grid_forget()
         self.device_name_entry.configure(textvariable=StringVar(value=''))
+        print(self.devices)
         self.device_name_entry.insert(0,self.devices[self.current_device].name)
         self.device_name_entry.grid(row=3,column=1)
         self.device_lT_entry.configure(textvariable=StringVar(value=''))
@@ -218,11 +229,13 @@ class ConfigurationGUI:
         self.device_output_option.set(self.devices[self.current_device].output)
         self.device_output_option.grid(row=5,column=1)
 
-        self.add_device.grid(row=6,column=0)
+        self.add_device_button.grid(row=6,column=0)
         self.exit_edit_mode.grid(row=6,column=2)
         self.save_device_button.grid(row=6,column=1)
 
     def n_view(self):
+        print(f"On normal view {self.current_device}")
+        print(self.devices)
         self.device_name.configure(text=self.devices[self.current_device].name)
         self.device_name.grid(row=3,column=1)
         self.device_lT.configure(text=self.devices[self.current_device].limit)
@@ -232,7 +245,8 @@ class ConfigurationGUI:
 
         self.save_device_button.grid_forget()
         self.edit_mode.grid(row=6,column=0)
-        self.add_device.grid_forget()
+        self.maintenance_button.grid(row=6,column=1)
+        self.add_device_button.grid_forget()
         self.exit_edit_mode.grid_forget()
         
 

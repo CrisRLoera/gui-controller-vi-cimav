@@ -65,51 +65,42 @@ class EditorGUI:
         self.save_button = CTkButton(nav,text="Save Program", command=self.save_program)
         self.cancel_button = CTkButton(nav,text="Cancel Edition", command=self.cancel_edition)
         self.err_delet_first_step = CTkLabel(notify, text="Error: Can´t delete first step")
+        # Preferences Widgets
+        self.onAdvance = False
+        self.advance_email = CTkLabel(self.main_frame, text="Responsible email")
+        self.advance_email_entry = CTkEntry(self.main_frame)
+        self.step_change = CTkCheckBox(self.main_frame,text="Let me know every step change")
+        self.interruption = CTkCheckBox(self.main_frame,text="Notify me of interruptions")
+        self.end_notify = CTkCheckBox(self.main_frame,text="Notify at the end of the program")
+        self.send_me = CTkCheckBox(self.main_frame,text="Send me and email", variable=self.set_email_enable, command=self.host.update_Screen)
+
+        self.confirm_button = CTkButton(self.main_frame, text="Confirm", command=lambda: self.confirm(self.advance_email_entry.get(),self.step_change.get(),self.interruption.get(),self.end_notify.get()))
+        self.cancel_a_button = CTkButton(self.main_frame, text="Back", command=self.close_advance)
+
 
     def open_advance(self):
-        advance = CTkToplevel(self.app)
-        advance_email = CTkLabel(advance, text="Responsible email")
-        advance_email_entry = CTkEntry(advance)
-        step_change = CTkCheckBox(advance,text="Let me know every step change")
-        interruption = CTkCheckBox(advance,text="Notify me of interruptions")
-        end_notify = CTkCheckBox(advance,text="Notify at the end of the program")
+        self.onAdvance = True
+        self.host.update_Screen()
 
-        def update_email():
-            if self.set_email_enable.get():
-                advance_email.pack()
-                advance_email_entry.pack()
-                step_change.pack()
-                interruption.pack()
-                end_notify.pack()
-                confirm_button.pack_forget()
-                confirm_button.pack()
-            else:
-                advance_email.pack_forget()
-                advance_email_entry.pack_forget()
-                step_change.pack_forget()
-                interruption.pack_forget()
-                end_notify.pack_forget()
-                confirm_button.pack_forget()
-                confirm_button.pack()
-        send_me = CTkCheckBox(advance,text="Send me and email", variable=self.set_email_enable, command=update_email)
-        send_me.pack()
+    def confirm(self,email, pref1,pref2,pref3):  
+        if self.set_email_enable.get():
+            self.responsible_email = email
+            self.interupt_preference = pref1
+            self.step_change_notify = pref2
+            self.end_preference = pref3
+            print(self.interupt_preference)
+            print(self.step_change_notify)
+            print(self.responsible_email)
+            print(self.end_preference)
+            self.close_advance()
+        else:
+            self.reset_preferences()
 
-        def confirm(email, pref1,pref2,pref3):  
-            if self.set_email_enable.get():
-                self.responsible_email = email
-                self.interupt_preference = pref1
-                self.step_change_notify = pref2
-                self.end_preference = pref3
-                print(self.interupt_preference)
-                print(self.step_change_notify)
-                print(self.responsible_email)
-                print(self.end_preference)
-            else:
-                self.reset_preferences()
-            advance.destroy()
+    def close_advance(self):
+        self.onAdvance = False
+        self.host.update_Screen()
 
-        confirm_button = CTkButton(advance, text="Confirm", command=lambda: confirm(advance_email_entry.get(),step_change.get(),interruption.get(),end_notify.get()))
-        confirm_button.pack()
+       
 
     def reset_preferences(self):
         self.responsible_email = None
@@ -118,28 +109,53 @@ class EditorGUI:
         self.end_preference = None
 
     def update(self):
-        #self.title.pack()
         self.main_frame.grid(row=0,column=0,columnspan=2,sticky="nswe")
-        self.name_gui.grid(row=0,column=1)
-        self.name_entry_gui.grid(row=1,column=1)
-        self.current_step_text.configure(text=f'Current step: {self.current_step}')
-        self.current_step_text.grid(row=2,column=1)
-        self.type_selector.grid(row=3,column=1)
-        if self.current_type == 'SET':
-            self.showSET()
-        elif self.current_type == 'SOAK':
-            self.showSOAK()
-        elif self.current_type == 'JUMP':
-            self.showJUMP()
-        elif self.current_type == 'END':
-            self.showEND()
-        self.next_step_button.grid(row=2,column=2)
-        self.back_step_button.grid(row=2,column=0)
-        self.add_step_button.grid(row=8,column=1)
-        self.delete_step_button.grid(row=9,column=1)
-        self.advance_button.grid(row=0,column=1)
+        # Data GUI
+        if not self.onAdvance:
+            self.advance_email.grid_forget()
+            self.advance_email_entry.grid_forget()
+            self.step_change.grid_forget()
+            self.interruption.grid_forget()
+            self.end_notify.grid_forget()
+            self.confirm_button.grid_forget()
+            self.name_gui.grid(row=0,column=1)
+            self.name_entry_gui.grid(row=1,column=1)
+            self.current_step_text.configure(text=f'Current step: {self.current_step}')
+            self.current_step_text.grid(row=2,column=1)
+            self.type_selector.grid(row=3,column=1)
+            if self.current_type == 'SET':
+                self.showSET()
+            elif self.current_type == 'SOAK':
+                self.showSOAK()
+            elif self.current_type == 'JUMP':
+                self.showJUMP()
+            elif self.current_type == 'END':
+                self.showEND()
+            self.next_step_button.grid(row=2,column=2)
+            self.back_step_button.grid(row=2,column=0)
+            self.add_step_button.grid(row=8,column=1)
+            self.delete_step_button.grid(row=9,column=1)
+            self.advance_button.grid(row=0,column=1)
+        else:
+            self.send_me.grid(row=0,column=1)
+            if self.set_email_enable.get():
+                self.advance_email.grid(row=1,column=1)
+                self.advance_email_entry.grid(row=2,column=1)
+                self.step_change.grid(row=3,column=1)
+                self.interruption.grid(row=4,column=1)
+                self.end_notify.grid(row=5,column=1)
+            else:
+                self.advance_email.grid_forget()
+                self.advance_email_entry.grid_forget()
+                self.step_change.grid_forget()
+                self.interruption.grid_forget()
+                self.end_notify.grid_forget()
+            self.confirm_button.grid(row=6,column=1)
+            self.cancel_a_button.grid(row=7,column=1)
+        # Nav buttons
         self.save_button.grid(row=0,column=0)
         self.cancel_button.grid(row=0,column=2)
+        # Errors and notifications in GUI
         if self.err_name:
             self.err_name_exist.grid(row=0,column=0)
         else:

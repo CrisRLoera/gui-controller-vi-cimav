@@ -1,5 +1,5 @@
 {
-        "creation_id": 17,
+        "creation_id": 20,
         "maintenance": "",
         "host": "listas.cimav.edu.mx",
         "port": "25",
@@ -9,16 +9,22 @@
                         "name": "General",
                         "use limit": 450,
                         "output": "output1",
-                        "last reminder": null
+                        "last reminder": null,
+                        "output on time": 0
                 },
                 {
                         "name": "Bandas",
                         "use limit": 450,
                         "output": "output1",
-                        "last reminder": null
+                        "last reminder": null,
+                        "output on time": 0
+                },
+                {
+                        "name": "Buje",
+                        "use limit": 100,
+                        "output": "output3",
+                        "last reminder": null,
+                        "output on time": 0
                 }
-        ],
-        "output1 on time": 0,
-        "output2 on time": 0,
-        "output3 on time": 0
+        ]
 }

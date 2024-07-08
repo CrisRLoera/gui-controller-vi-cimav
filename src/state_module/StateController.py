@@ -6,7 +6,6 @@ class SOAK:
         print("Created")
         self.type = "SOAK"
         self.created_time = datetime.datetime.now()
-        self.time = None
         if time <= 0:
             self.time = 0
         else:
@@ -80,18 +79,9 @@ class ControlFlow:
         self.output3 = False
         self.output3_on_time = None
 
+        self.conf_file = self.host.file_controller.conf_file
+
     def checkCurrentFlow(self, step):
-            if len(self.host.state_screen.program_steps) > step:
-                print("apagando")
-                self.host.state_screen.turnOff()
-                self.host.state_screen.current_program = self.host.file_controller.getProgram(self.host.state_Screen.program_name)
-                self.host.state_screen.current_step_number = 0
-                self.host.state_screen.changeCurrentProgram()
-                self.stack = [None]
-                self.current = None
-                self.task_num = 0
-                self.stack_save = [None]
-                self.host.state_screen.program_state = False 
             if self.host.state_screen.program_steps[step]== None:
                 return 0
             self.current = self.host.state_screen.program_steps[step]
@@ -265,11 +255,13 @@ class ControlFlow:
         self.output3 = out3
 
     def trackOutputs(self):
-        set_seconds = 60
+        set_seconds = 5
         current_time = datetime.datetime.now()
         if self.output1 and self.output1_on_time !=None:
             if (current_time - self.output1_on_time).total_seconds() > set_seconds:
-                self.conf_file['output1 on time'] += 1
+                for device in self.conf_file['maintenance devices']:
+                    if device['output']=="output1":
+                        device['output on time'] += 1
         elif self.output1 and self.output1_on_time == None:
             self.output1_on_time = datetime.datetime.now()
         elif self.output1 == False:
@@ -277,7 +269,10 @@ class ControlFlow:
 
         if self.output2 and self.output2_on_time !=None:
             if (current_time - self.output2_on_time).total_seconds() > set_seconds:
-                self.conf_file['output2 on time'] += 1
+                if (current_time - self.output1_on_time).total_seconds() > set_seconds:
+                    for device in self.conf_file['maintenance devices']:
+                        if device['output']=="output1":
+                            device['output on time'] += 1
         elif self.output2 and self.output2_on_time == None:
             self.output2_on_time = datetime.datetime.now()
         elif self.output2 == False:
@@ -285,7 +280,10 @@ class ControlFlow:
 
         if self.output3 and self.output3_on_time !=None:
             if (current_time - self.output3_on_time).total_seconds() > set_seconds:
-                self.conf_file['output3 on time'] += 1
+                if (current_time - self.output1_on_time).total_seconds() > set_seconds:
+                    for device in self.conf_file['maintenance devices']:
+                        if device['output']=="output1":
+                            device['output on time'] += 1
         elif self.output3 and self.output3_on_time == None:
             self.output3_on_time = datetime.datetime.now()
         elif self.output3 == False:

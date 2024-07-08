@@ -58,11 +58,11 @@ class Device:
                 if self.name_label.cget("text") == device.name and self.limit_label.cget("text")== device.limit and self.assign_output_label.cget("text") == device.output:
                     print("get")
                     if device['output']=='output1':
-                        self.host.host.file_controller.conf_file['output1 on time']:0
+                        self.host.host.file_controller.conf_file['output1 on time']
                     if device['output']=='output2':
-                        self.host.host.file_controller.conf_file['output2 on time']:0
+                        self.host.host.file_controller.conf_file['output2 on time']
                     if device['output']=='output3':
-                        self.host.host.file_controller.conf_file['output3 on time']:0
+                        self.host.host.file_controller.conf_file['output3 on time']
                     self.host.host.file_controller.conf_file['maintenance devices'][index]['last reminder'] = None
                     self.host.host.file_controller.updateConf()
                     self.host.host.file_controller.loadConf()

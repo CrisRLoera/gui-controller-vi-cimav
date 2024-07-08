@@ -9,6 +9,7 @@ from src.network_module.EmailController import EmailController
 from src.config_module.ConfigurationGUI import ConfigurationGUI
 import nmcli
 from customtkinter import CTk, CTkLabel, CTkButton, CTkToplevel,CTkFrame
+#import RPi.GPIO as GPIO
 import datetime
 
 class MainApp:
@@ -95,6 +96,7 @@ class MainApp:
             self.state_controller.trackOutputs()
             self.refresh_main_screen()
             self.update_Screen()
+            #GPIO.output(self.state_controller.output1_pin, GPIO.LOW)
         self.current_time = datetime.datetime.now()
         self.update_hub()
         self.gui_app.after(1000, self.check_main_flow)
@@ -102,7 +104,7 @@ class MainApp:
     def check_reminder(self):
         try:
             for device in self.file_controller.conf_file['maintenance devices']:
-                if (device['use limit']*60)>= self.file_controller.conf_file['output1 on time']:
+                if (device['use limit']*60)>= device['output on time']:
                     if device['last reminder']==None:                                 
                         self.email_controller.send_maintenance_email(self.file_controller.conf_file['maintenance'],device['name'])
                     else:
@@ -161,6 +163,11 @@ class MainApp:
         self.time_hub.configure(text=self.current_time)
 
 if __name__ == "__main__":
-    main = MainApp()
-    main.update_Screen()
-    main.gui_app.mainloop()
+    try:
+        main = MainApp()
+        main.update_Screen()
+        main.gui_app.mainloop()
+    except:
+        #GPIO.cleanup()
+        pass
+

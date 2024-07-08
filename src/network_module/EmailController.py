@@ -38,7 +38,7 @@ class EmailController:
 
 # mandar correo al finalizar
     def send_program_finalize_email(self,program_owner,end_message):
-        mailtext = f"The program has ended with completion status - {end-message}."
+        mailtext = f"The program has ended with completion status - {end_message}."
         msg = MIMEMultipart('alternative')
         msg['Subject'] = "Program completed"
         msg['From'] = self.host.file_controller.conf_file["sender"]
@@ -53,13 +53,13 @@ class EmailController:
 
 
 # mandar correo cuando se requiere manteniminetos
-    def send_maintenance_email(self,part):
+    def send_maintenance_email(self,maintenance,part):
         # Change the message
         mailtext = f"The {part} requires inspection and maintenance."
         msg = MIMEMultipart('alternative')
         msg['Subject'] = f"{part} maintenance"
         msg['From'] = self.host.file_controller.conf_file["maintenance"]
-        msg['To'] = program_owner
+        msg['To'] = maintenance
         # To create plain text mails
         part= MIMEText(mailtext, 'plain')
         msg.attach(part)
