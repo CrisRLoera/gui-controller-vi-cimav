@@ -1,4 +1,5 @@
 from customtkinter import CTkLabel, CTkButton, CTkEntry, CTkFrame
+import oskb
 
 class StateGUI:
     def __init__(self,data,nav,notify,host):

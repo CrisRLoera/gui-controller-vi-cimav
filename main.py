@@ -18,7 +18,7 @@ class MainApp:
         self.gui_app.geometry("800x480")
 #        self.gui_app.attributes("-fullscreen", True)
         self.gui_app.grid_columnconfigure((0), weight=1)
-        self.gui_app.grid_rowconfigure((0,2,3), weight=0)
+        self.gui_app.grid_rowconfigure((0,2,3,4), weight=0)
         self.gui_app.grid_rowconfigure((1), weight=1)
         self.current_screen = ''
         

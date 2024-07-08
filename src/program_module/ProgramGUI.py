@@ -1,4 +1,5 @@
 from customtkinter import CTkLabel, CTkButton, CTkOptionMenu, CTkToplevel, CTkEntry, CTkFrame
+from src.keyboard_module import VirtualKeyboard
 
 class ProgramGUI:
     def __init__(self,data,nav,notify,host,state,editor):
@@ -23,6 +24,7 @@ class ProgramGUI:
         self.clone_program_button = CTkButton(self.main_frame, text="Clone", command=self.clone_program)
         self.popup_label = CTkLabel(self.main_frame, text="New program name:")
         self.popup_entry = CTkEntry(self.main_frame)
+        self.popup_entry.bind("<Button-1>",self.show_keyboard)
         self.create_button = CTkButton(self.main_frame, text="Confirm", command=lambda: self.create_event(self.popup_entry.get()))
         self.cancel_creation_button = CTkButton(self.main_frame, text="Cancel", command=self.cancel_creation)
         
@@ -32,12 +34,17 @@ class ProgramGUI:
         self.err_empty_steps = False
         self.err_empty_steps_msg = CTkLabel(notify, text="Error: Can´t load the selected program is empty")
         self.onCreation= False
+        self.keyboard_frame = None
 
     def create_program(self):
         self.onCreation = True
         self.host.update_Screen()
-        
-       
+    
+    def show_keyboard(self,event):
+        if self.keyboard_frame is not None:
+            self.keyboard_frame.destroy()
+        self.keyboard_frame = VirtualKeyboard(self.host.gui_app, self.popup_entry)
+        self.keyboard_frame.grid(row=4,column=0)
 
     def cancel_creation(self):
         self.onCreation= False

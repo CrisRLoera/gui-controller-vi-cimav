@@ -1,4 +1,5 @@
 from customtkinter import CTkToplevel, CTkLabel, CTkEntry, CTkButton, CTkOptionMenu, CTkFrame
+from src.keyboard_module import VirtualKeyboard, VirtualNumKeyboard
 from tkinter import StringVar
 
 class Device:
@@ -49,13 +50,17 @@ class ConfigurationGUI:
         self.dev_view.grid_rowconfigure((0,1,2,3,4,5,6),weight=1)
         self.smtp_label = CTkLabel(self.conf_view, text="SMTP Server")
         self.smtp_entry = CTkEntry(self.conf_view)
+        self.smtp_entry.bind("<Button-1>",self.show_kb_smtp)
         self.port = CTkLabel(self.conf_view, text="Port")
         self.port_entry = CTkEntry(self.conf_view)
+        self.port_entry.bind("<Button-1>",self.show_nkb_port)
         self.sender_label = CTkLabel(self.conf_view, text="Sender")
         self.sender_entry = CTkEntry(self.conf_view)
+        self.sender_entry.bind("<Button-1>",command=self.show_kb_sender)
         self.maintenance_label = CTkLabel(self.conf_view, text="Maintenance")
         self.maintenance_email_label = CTkLabel(self.conf_view, text="Maintenance email")
         self.maintenance_email_entry = CTkEntry(self.conf_view)
+        self.maintenance_email_entry.bind("<Button-1>",self.show_kb_ma_email)
 
         self.devices_label = CTkLabel(self.dev_view, text="Devices")
         self.edit_mode = CTkButton(self.dev_view,text="edit", command=self.enable_edit_mode)
@@ -65,10 +70,12 @@ class ConfigurationGUI:
         self.device_name_label=CTkLabel(self.dev_view,text="Device name:")
         self.device_name=CTkLabel(self.dev_view)
         self.device_name_entry = CTkEntry(self.dev_view)
+        self.device_name_entry.bind("<Button-1>",self.show_kb_dev_name)
 
         self.device_lT_label=CTkLabel(self.dev_view,text="Device limit:")
         self.device_lT=CTkLabel(self.dev_view)
         self.device_lT_entry= CTkEntry(self.dev_view)
+        self.device_lT_entry.bind("<Button-1>",self.show_kb_dev_it)
 
         self.device_output_label=CTkLabel(self.dev_view,text="Device output:")
         self.device_output=CTkLabel(self.dev_view)
@@ -83,6 +90,7 @@ class ConfigurationGUI:
         self.current_device=0
         
         self.get_devices()
+        self.keyboard_frame = None
     
 
     def maintenance(self):
@@ -258,3 +266,40 @@ class ConfigurationGUI:
                 pass
             else:
                 widget.grid_forget()
+
+    def show_kb_smtp(self,event):
+        if self.keyboard_frame is not None:
+            self.keyboard_frame.destroy()
+        self.keyboard_frame = VirtualKeyboard(self.host.gui_app, self.smtp_entry)
+        self.keyboard_frame.grid(row=4,column=0)
+
+    def show_kb_sender(self, event):
+        if self.keyboard_frame is not None:
+            self.keyboard_frame.destroy()
+        self.keyboard_frame = VirtualKeyboard(self.host.gui_app, self.sender_entry)
+        self.keyboard_frame.grid(row=4,column=0)
+
+    def show_kb_ma_email(self, event):
+        if self.keyboard_frame is not None:
+            self.keyboard_frame.destroy()
+        self.keyboard_frame = VirtualKeyboard(self.host.gui_app, self.maintenance_email_entry)
+        self.keyboard_frame.grid(row=4,column=0)
+
+    def show_kb_dev_name(self,device):
+        if self.keyboard_frame is not None:
+            self.keyboard_frame.destroy()
+        self.keyboard_frame = VirtualKeyboard(self.host.gui_app, self.device_name_entry)
+        self.keyboard_frame.grid(row=4,column=0)
+
+    def show_kb_dev_it(self,device):
+        if self.keyboard_frame is not None:
+            self.keyboard_frame.destroy()
+        self.keyboard_frame = VirtualNumKeyboard(self.host.gui_app, self.device_lT_entry)
+        self.keyboard_frame.grid(row=4,column=0)
+
+    def show_nkb_port(self,event):
+        if self.keyboard_frame is not None:
+            self.keyboard_frame.destroy()
+        self.keyboard_frame = VirtualNumKeyboard(self.host.gui_app, self.port_entry)
+        self.keyboard_frame.grid(row=4,column=0)
+

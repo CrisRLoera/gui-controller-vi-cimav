@@ -1,5 +1,7 @@
 from customtkinter import CTkLabel, CTkEntry, CTkCheckBox, CTkOptionMenu, CTkButton, CTkToplevel, CTkFrame
 from tkinter import StringVar, BooleanVar
+from src.keyboard_module import VirtualKeyboard,VirtualNumKeyboard
+
 class EditorGUI:
     def __init__(self, data,nav,notify,host):
         #self.title = CTkLabel(app,text="Editor")
@@ -12,6 +14,7 @@ class EditorGUI:
         self.main_frame.grid_columnconfigure((0,1,2),weight=1)
         
         self.name_entry_gui = CTkEntry(self.main_frame)
+        self.name_entry_gui.bind("<Button-1>",self.show_kb_name_gui)
         self.host = host
         self.current_step = 0
         self.current_type = None
@@ -44,14 +47,18 @@ class EditorGUI:
         self.soak_time_txt_gui = CTkLabel(self.main_frame, text="Soak duration in minutes")
         self.soak_entry = CTkEntry(self.main_frame)
         
+        self.soak_entry.bind("<Button-1>",self.show_nkb_soak)
         
         self.jump_err1 = False
         self.err_jump_previus_n_al = CTkLabel(notify, text="Error: Step selection not allowed, the current step has to be larger than the selected step")
         # Falta texto
         self.jump_times_txt_gui = CTkLabel(self.main_frame, text="Repetition number")
         self.jump_times = CTkEntry(self.main_frame)
+        self.jump_times.bind("<Button-1>",self.show_nkb_jmp_t)
+
         self.jump_step_txt_gui = CTkLabel(self.main_frame, text="Step to jump")
         self.jump_step = CTkEntry(self.main_frame)
+        self.jump_step.bind("<Button-1>",self.show_nkb_jmp_s)
        
         self.current_step_text = CTkLabel(self.main_frame)
 
@@ -69,6 +76,7 @@ class EditorGUI:
         self.onAdvance = False
         self.advance_email = CTkLabel(self.main_frame, text="Responsible email")
         self.advance_email_entry = CTkEntry(self.main_frame)
+        self.advance_email_entry.bind("<Button-1>",self.show_kb_adv_email)
         self.step_change = CTkCheckBox(self.main_frame,text="Let me know every step change")
         self.interruption = CTkCheckBox(self.main_frame,text="Notify me of interruptions")
         self.end_notify = CTkCheckBox(self.main_frame,text="Notify at the end of the program")
@@ -76,7 +84,7 @@ class EditorGUI:
 
         self.confirm_button = CTkButton(self.main_frame, text="Confirm", command=lambda: self.confirm(self.advance_email_entry.get(),self.step_change.get(),self.interruption.get(),self.end_notify.get()))
         self.cancel_a_button = CTkButton(self.main_frame, text="Back", command=self.close_advance)
-
+        self.keyboard_frame = None
 
     def open_advance(self):
         self.onAdvance = True
@@ -368,3 +376,35 @@ class EditorGUI:
             self.end_switch_prog.grid(row=5,column=1)
         else:
             self.end_switch_prog.grid_forget()
+
+    def show_kb_name_gui(self,event):
+        if self.keyboard_frame is not None:
+            self.keyboard_frame.destroy()
+        self.keyboard_frame = VirtualKeyboard(self.host.gui_app, self.name_entry_gui)
+        self.keyboard_frame.grid(row=4,column=0)
+
+    def show_nkb_jmp_t(self,event):
+        if self.keyboard_frame is not None:
+            self.keyboard_frame.destroy()
+        self.keyboard_frame = VirtualNumKeyboard(self.host.gui_app, self.jump_times)
+        self.keyboard_frame.grid(row=4,column=0)
+
+    def show_nkb_jmp_s(self,event):
+        if self.keyboard_frame is not None:
+            self.keyboard_frame.destroy()
+        self.keyboard_frame = VirtualNumKeyboard(self.host.gui_app, self.jump_step)
+        self.keyboard_frame.grid(row=4,column=0)
+
+    def show_nkb_soak(self,event):
+        if self.keyboard_frame is not None:
+            self.keyboard_frame.destroy()
+        self.keyboard_frame = VirtualNumKeyboard(self.host.gui_app, self.soak_entry)
+        self.keyboard_frame.grid(row=4,column=0)
+
+    def show_kb_adv_email(self,event):
+        if self.keyboard_frame is not None:
+            self.keyboard_frame.destroy()
+        self.keyboard_frame = VirtualKeyboard(self.host.gui_app, self.advance_email_entry)
+        self.keyboard_frame.grid(row=4,column=0)
+
+
