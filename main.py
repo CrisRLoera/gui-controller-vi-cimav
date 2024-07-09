@@ -77,7 +77,7 @@ class MainApp:
         nmcli.disable_use_sudo()
         dev_list = nmcli.device.status()
         for dev in dev_list:
-            if dev.state == 'connected' and dev.device_type == 'wifi':
+            if dev.connection != None and dev.device_type == 'wifi':
                 self.wifi_status_icon = 'connect'
                 self.update_hub()
                 return True
