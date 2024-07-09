@@ -3,7 +3,7 @@ from customtkinter import CTkLabel, CTkComboBox, CTkButton, CTkEntry, CTkFrame
 from src.keyboard_module import VirtualKeyboard
 
 class NetworkGUI:
-    def __init__(self,data,nav,host):
+    def __init__(self,data,nav,notify,host):
         self.host = host
         self.network_view = None
         self.ssid_list = list(network_get_ssid_list())
@@ -13,6 +13,8 @@ class NetworkGUI:
         self.network_view.grid_rowconfigure((0,1,2,3,4,5),weight=1)
         self.network_view.grid_columnconfigure((0),weight=1)
         self.keyboard_frame = None
+        self.err_network_label = CTkLabel(notify,text="Error: Can´t connect to the network")
+        self.err_net = False
 
     def selected_ssid(self,choice):
         self.ssid = choice
@@ -20,10 +22,12 @@ class NetworkGUI:
     def connect(self,pwd_entry):
         try:
             network_connect(self.ssid, pwd_entry.get())
+            self.err_net = False
+            self.host.current_screen="state"
+            self.host.update_Screen()
         except:
-            print("Network err")
-        self.host.current_screen="state"
-        self.host.update_Screen()
+            self.err_net = True
+            self.update()
 
     def go_back(self):
         self.host.current_screen="state"
@@ -46,6 +50,10 @@ class NetworkGUI:
         self.pwd_entry.grid(row=3,column=0)
         connect_button.grid(row=4,column=0)
         back_button.grid(row=5,column=0)
+        if self.err_net:
+            self.err_network_label.grid(row=0,column=0)
+        else:
+            self.err_network_label.grid_forget()
 
     def show_kb_ssid(self,event):
         if self.keyboard_frame is not None:

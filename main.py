@@ -40,7 +40,7 @@ class MainApp:
         self.notify_frame.grid_rowconfigure((0),weight=1)
 
         self.conf_screen = ConfigurationGUI(self.data_frame,self.nav_frame,self)
-        self.network_screen = NetworkGUI(self.data_frame, self.nav_frame, self)
+        self.network_screen = NetworkGUI(self.data_frame, self.nav_frame, self.notify_frame,self)
         self.state_screen = StateGUI(self.data_frame,self.nav_frame,self.notify_frame,self)
         self.editor_screen = EditorGUI(self.data_frame,self.nav_frame, self.notify_frame,self)
         self.program_screen = ProgramGUI(self.data_frame,self.nav_frame,self.notify_frame,self,self.state_screen,self.editor_screen)
