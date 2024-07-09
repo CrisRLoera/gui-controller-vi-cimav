@@ -2,6 +2,9 @@ from customtkinter import CTkLabel, CTkEntry, CTkCheckBox, CTkOptionMenu, CTkBut
 from tkinter import StringVar, BooleanVar
 from src.keyboard_module import VirtualKeyboard,VirtualNumKeyboard
 
+class JUMP_EXCEPTION(Exception):
+    pass
+
 class EditorGUI:
     def __init__(self, data,nav,notify,host):
         #self.title = CTkLabel(app,text="Editor")
@@ -186,50 +189,62 @@ class EditorGUI:
 
 
     def back_step(self):
-        old_step = self.current_step
-        if self.current_step >0:
-            self.oldStep(old_step)
-            self.current_step -= 1
-            if self.steps_list[self.current_step]!= {}:
-                self.current_type = self.steps_list[self.current_step]['type']
-            self.refresh()
-            print(self.current_step)
+        try:
+            old_step = self.current_step
+            if self.current_step >0:
+                self.oldStep(old_step)
+                self.current_step -= 1
+                if self.steps_list[self.current_step]!= {}:
+                    self.current_type = self.steps_list[self.current_step]['type']
+                self.refresh()
+                print(self.current_step)
+        except JUMP_EXCEPTION:
+            self.jump_err1 = True
+            self.update()
 
     def next_step(self):
-        old_step = self.current_step
-        if self.current_step < len(self.steps_list)-1:
-            self.oldStep(old_step)
-            self.current_step += 1
-            if self.steps_list[self.current_step]!= {}:
-                self.current_type = self.steps_list[self.current_step]['type']
-            else:
-                self.current_type = None
-            self.refresh()
-            print(self.current_step)
+        try:
+            old_step = self.current_step
+            if self.current_step < len(self.steps_list)-1:
+                self.oldStep(old_step)
+                self.current_step += 1
+                if self.steps_list[self.current_step]!= {}:
+                    self.current_type = self.steps_list[self.current_step]['type']
+                else:
+                    self.current_type = None
+                self.refresh()
+                print(self.current_step)
+        except JUMP_EXCEPTION:
+            self.jump_err1 = True
+            self.update()
 
     def save_program(self):
-        self.oldStep(self.current_step)
-        program={""}
-        if self.host.file_controller.diffName(self.number,self.name_entry_gui.get()):
-            self.program['name']=self.name_entry_gui.get()
-            self.program['steps']=self.steps_list
-            self.program['responsible']= self.responsible_email
-            self.program['interrupt'] = self.interupt_preference
-            self.program['end notify'] = self.end_preference
-            self.program['step change notify'] = self.step_change_notify
-            self.host.file_controller.saveProgram(self.program['number'],self.program)
-            self.program = None
-            self.reset_preferences()
-            self.steps_list = None
-            self.number = None
-            self.current_step = 0
-            self.current_type = None
-            self.host.program_screen.selected = None
-            self.host.current_screen = 'program'
-            self.host.update_Screen()
-            self.err_name = False
-        else:
-            self.err_name = True
+        try:
+            self.oldStep(self.current_step)
+            program={""}
+            if self.host.file_controller.diffName(self.number,self.name_entry_gui.get()):
+                self.program['name']=self.name_entry_gui.get()
+                self.program['steps']=self.steps_list
+                self.program['responsible']= self.responsible_email
+                self.program['interrupt'] = self.interupt_preference
+                self.program['end notify'] = self.end_preference
+                self.program['step change notify'] = self.step_change_notify
+                self.host.file_controller.saveProgram(self.program['number'],self.program)
+                self.program = None
+                self.reset_preferences()
+                self.steps_list = None
+                self.number = None
+                self.current_step = 0
+                self.current_type = None
+                self.host.program_screen.selected = None
+                self.host.current_screen = 'program'
+                self.host.update_Screen()
+                self.err_name = False
+            else:
+                self.err_name = True
+                self.update()
+        except JUMP_EXCEPTION:
+            self.jump_err1 = True
             self.update()
         
     def cancel_edition(self):
@@ -296,6 +311,7 @@ class EditorGUI:
             self.steps_list[old]['type']='JUMP'
             if int(self.jump_step.get())>self.current_step:
                 self.jump_err1 = True
+                raise JUMP_EXCEPTION
             else:
                 self.steps_list[old]['step']=int(self.jump_step.get())
                 self.jump_err1 = False
@@ -309,6 +325,7 @@ class EditorGUI:
                 self.steps_list[old]['program']=self.name_entry_gui.get()
         elif self.current_type == None:
             pass
+
 
     def loadStepConf(self):
         if self.current_type == 'SET':
