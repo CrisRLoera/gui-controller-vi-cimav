@@ -8,27 +8,22 @@ class VirtualKeyboard(CTkFrame):
         self.create_keyboard()
 
     def create_keyboard(self):
-        for widget in self.winfo_children():
-            widget.destroy()
-
         self.keys_lower = [
             ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'Backspace'],
             ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'Close'],
-            ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', '@', '.'],
-            ['z', 'x', 'c', 'v', 'b', 'n', 'm', 'Space','Shift']
+            ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', '@', 'Space'],
+            ['z', 'x', 'c', 'v', 'b', 'n', 'm', '.', '_', '-', 'Shift']
         ]
         self.keys_upper = [
             ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'Backspace'],
             ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'Close'],
-            ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', '@', '.'],
-            ['Z', 'X', 'C', 'V', 'B', 'N', 'M', 'Space','Shift']
+            ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', '@', 'Space'],
+            ['Z', 'X', 'C', 'V', 'B', 'N', 'M', '.', '_', '-', 'Shift']
         ]
         self.draw_keyboard()
 
     def draw_keyboard(self):
         # Limpiar el teclado existente
-        for widget in self.winfo_children():
-            widget.destroy()
 
         # Seleccionar la lista de teclas basada en el estado de Shift
         keys = self.keys_upper if self.shift_pressed else self.keys_lower
@@ -37,9 +32,12 @@ class VirtualKeyboard(CTkFrame):
         for y, row in enumerate(keys):
             for x, key in enumerate(row):
                 if key == 'Space':
-                    button = CTkButton(self, text='Space', width=200, command=lambda k=key: self.on_key_press(k))
+                    button = CTkButton(self, text='Space', width=60, command=lambda k=key: self.on_key_press(k))
                 elif key == 'Shift':
                     button = CTkButton(self, text='Shift', width=60, command=self.toggle_shift)
+                elif key == 'Close' or key == 'Backspace':
+                    button = CTkButton(self, text=key, width=60, command=lambda k=key: self.on_key_press(k))
+                    
                 else:
                     button = CTkButton(self, text=key, width=40, command=lambda k=key: self.on_key_press(k))
                 button.grid(row=y, column=x, padx=2, pady=2)
@@ -54,8 +52,8 @@ class VirtualKeyboard(CTkFrame):
             self.destroy()
         else:
             self.entry_widget.insert('end', key)
-        if self.shift_pressed and key != 'Shift':
-            self.toggle_shift()
+        #if self.shift_pressed and key != 'Shift':
+        #    self.toggle_shift()
     def toggle_shift(self):
         self.shift_pressed = not self.shift_pressed
         self.draw_keyboard()

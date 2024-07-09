@@ -125,6 +125,7 @@ class ControlFlow:
                     self.stack[self.task_num] = None
                     if self.host.isConnected() and self.host.state_screen.current_program["step change notify"] == 1:
                         self.host.email_controller.send_step_change_email(self.host.state_screen.current_program ["responsible"],"SOAK",step)
+
             elif self.current["type"] == "JUMP":
                 if (self.task_num - 1)>=0:
                     if self.stack[self.task_num-1].step_id == step:
@@ -153,7 +154,6 @@ class ControlFlow:
                         self.stack[self.task_num].decrease()
                         self.host.state_screen.current_step_number = self.stack[self.task_num].step
                         self.task_num += 1
-
             elif self.current["type"] == "END":
                 if self.stack[self.task_num] == None:
                     self.stack[self.task_num] = END(self.current['action'],self.current['program'])
@@ -204,6 +204,7 @@ class ControlFlow:
                     if self.stack[self.task_num].type=="SOAK":
                         self.host.state_screen.soak_time_left = self.stack[self.task_num].time
             self.stack_save = self.transformJSON()
+            self.host.state_screen.update()
 
     def transformJSON(self):
         temp_stack = []
