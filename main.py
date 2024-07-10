@@ -16,7 +16,7 @@ import datetime
 class MainApp:
     def __init__(self):
         self.gui_app = CTk()
-        FontManager.load_font("/home/crisdev/Descargas/Inter.ttf")
+        FontManager.load_font("./src/font/Inter.ttf")
         self.gui_app.geometry("800x480")
 #        self.gui_app.attributes("-fullscreen", True)
         self.gui_app.grid_columnconfigure((0), weight=1)

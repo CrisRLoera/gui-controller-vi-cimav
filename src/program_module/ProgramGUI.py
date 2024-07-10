@@ -10,7 +10,6 @@ class ProgramGUI:
         self.main_frame = CTkFrame(data,fg_color="#F5F5F9")
         self.main_frame.grid_rowconfigure((0,1,2,3,4),weight=1)
         self.main_frame.grid_columnconfigure((0),weight=1)
-        #self.menu = CTkLabel(app,text="Programas")
         self.selected = None
         self.flag_unselected = CTkLabel(notify, text="Select a program to load")
         self.def_font=self.host.def_font
@@ -135,6 +134,7 @@ class ProgramGUI:
             else:
                 self.err_empty_steps = False
                 self.state.current_program = temp
+                self.state.current_step_number = 0
                 self.state.changeCurrentProgram()
                 self.host.current_screen = 'state'
                 self.host.update_Screen()
