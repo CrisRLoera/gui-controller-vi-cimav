@@ -270,7 +270,7 @@ class ControlFlow:
 
         if self.output2 and self.output2_on_time !=None:
             if (current_time - self.output2_on_time).total_seconds() > set_seconds:
-                if (current_time - self.output1_on_time).total_seconds() > set_seconds:
+                if (current_time - self.output2_on_time).total_seconds() > set_seconds:
                     for device in self.conf_file['maintenance devices']:
                         if device['output']=="output1":
                             device['output on time'] += 1
@@ -281,7 +281,7 @@ class ControlFlow:
 
         if self.output3 and self.output3_on_time !=None:
             if (current_time - self.output3_on_time).total_seconds() > set_seconds:
-                if (current_time - self.output1_on_time).total_seconds() > set_seconds:
+                if (current_time - self.output3_on_time).total_seconds() > set_seconds:
                     for device in self.conf_file['maintenance devices']:
                         if device['output']=="output1":
                             device['output on time'] += 1
