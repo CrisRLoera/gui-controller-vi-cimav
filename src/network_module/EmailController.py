@@ -19,7 +19,10 @@ class EmailController:
         msg.attach(part)
         
         server = smtplib.SMTP(self.email_host,self.port)
-        server.sendmail(msg['From'], msg['To'], msg.as_string())
+        try:
+            server.sendmail(msg['From'], msg['To'], msg.as_string())
+        except:
+            print("No send email interruption")
         server.quit()
 
     def send_step_change_email(self,program_owner,step_type,step_number):
@@ -33,7 +36,10 @@ class EmailController:
         msg.attach(part)
         
         server = smtplib.SMTP(self.email_host,self.port)
-        server.sendmail(msg['From'], msg['To'], msg.as_string())
+        try:
+            server.sendmail(msg['From'], msg['To'], msg.as_string())
+        except:
+            print("No send email interruption")
         server.quit()
 
 # mandar correo al finalizar
@@ -48,7 +54,10 @@ class EmailController:
         msg.attach(part)
         
         server = smtplib.SMTP(self.email_host,self.port)
-        server.sendmail(msg['From'], msg['To'], msg.as_string())
+        try:
+            server.sendmail(msg['From'], msg['To'], msg.as_string())
+        except:
+            print("No send email interruption")
         server.quit()
 
 
@@ -65,7 +74,10 @@ class EmailController:
         msg.attach(part)
         
         server = smtplib.SMTP(self.email_host,self.port)
-        server.sendmail(msg['From'], msg['To'], msg.as_string())
+        try:
+            server.sendmail(msg['From'], msg['To'], msg.as_string())
+        except:
+            print("No send email interruption")
         server.quit()
 
 

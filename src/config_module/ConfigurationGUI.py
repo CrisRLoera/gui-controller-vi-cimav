@@ -1,3 +1,4 @@
+import collections
 from re import S
 from customtkinter import CTkToplevel, CTkLabel, CTkEntry, CTkButton, CTkOptionMenu, CTkFrame, CTkFont
 from src.keyboard_module import VirtualKeyboard, VirtualNumKeyboard
@@ -92,6 +93,8 @@ class ConfigurationGUI:
         self.save_edit_mode = CTkButton(nav,text="save all changes", command=self.save_edition, font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
         self.close_button = CTkButton(nav,text="Close",command=self.close_window, font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
 
+        self.err_save = CTkLabel(self.host.notify_frame,text="Error: Can't save the configuration",image=host.file_controller.icons['alert'],compound="left")
+
         self.current_device=0
         
         self.get_devices()
@@ -140,11 +143,14 @@ class ConfigurationGUI:
         #self.gen_pack()
 
     def save_device(self):
-        self.devices[self.current_device].name=self.device_name_entry.get()
-        self.devices[self.current_device].limit=self.device_lT_entry.get()
-        self.devices[self.current_device].output=self.device_output_option.get()
-        self.disable_edit_mode()
-        self.host.update_Screen()
+        try:
+            self.devices[self.current_device].name=self.device_name_entry.get()
+            self.devices[self.current_device].limit=int(self.device_lT_entry.get())
+            self.devices[self.current_device].output=self.device_output_option.get()
+            self.disable_edit_mode()
+            self.host.update_Screen()
+        except:
+            print("ERR: save device aborted")
     def delete_device(self):
         if self.devices[self.current_device].onDeleted:
             self.devices[self.current_device].onDeleted = False
@@ -153,22 +159,26 @@ class ConfigurationGUI:
         self.host.update_Screen()
     
     def save_edition(self):
-        dev_list = []
-        for device in self.devices:
-            value = device.getValues()
-            if not device.onDeleted:
-                if value[0]!='' or value[1]!='' or value[2]!='':
-                    dev_list.append({"name":value[0],"use limit":int(value[1]),"output":value[2],'last reminder':device.last})
-        self.host.file_controller.conf_file["host"]=self.smtp_entry.get()
-        self.host.file_controller.conf_file["port"]=self.port_entry.get()
-        self.host.file_controller.conf_file["sender"]=self.sender_entry.get()
-        self.host.file_controller.conf_file["maintenance"]=self.maintenance_email_entry.get()
-        self.host.file_controller.conf_file["maintenance devices"] = dev_list
-        self.host.file_controller.updateConf()
-        self.host.file_controller.loadConf()
-        self.disable_edit_mode()
-        self.get_devices()
-        self.gen_pack()
+        try:
+            dev_list = []
+            for device in self.devices:
+                value = device.getValues()
+                if not device.onDeleted:
+                    dev_list.append({"name":device.name,"use limit":int(device.limit),"output":device.output,'last reminder':device.last,'output on time':device.time})
+            self.host.file_controller.conf_file["host"]=self.smtp_entry.get()
+            self.host.file_controller.conf_file["port"]=self.port_entry.get()
+            self.host.file_controller.conf_file["sender"]=self.sender_entry.get()
+            self.host.file_controller.conf_file["maintenance"]=self.maintenance_email_entry.get()
+            self.host.file_controller.conf_file["maintenance devices"] = dev_list
+            self.host.file_controller.updateConf()
+            self.host.file_controller.loadConf()
+            self.disable_edit_mode()
+            self.get_devices()
+            self.gen_pack()
+            self.err_save.grid_forget()
+        except:
+            self.err_save.grid(row=0, column=0)
+            print("ERR: save edition configuration")
 
     def add_device(self):
         self.devices.append(Device(self.conf_view,self.host,'','','',None,0))

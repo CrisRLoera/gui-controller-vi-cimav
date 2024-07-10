@@ -6,23 +6,23 @@
         "sender": "ivan@listas.cimav.edu.mx",
         "maintenance devices": [
                 {
-                        "name": "General",
-                        "use limit": 450,
-                        "output": "output1",
-                        "last reminder": null,
-                        "output on time": 0
-                },
-                {
-                        "name": "Bandas",
-                        "use limit": 450,
+                        "name": "Banda",
+                        "use limit": 100,
                         "output": "output1",
                         "last reminder": null,
                         "output on time": 0
                 },
                 {
                         "name": "Buje",
-                        "use limit": 100,
-                        "output": "output3",
+                        "use limit": 200,
+                        "output": "output2",
+                        "last reminder": null,
+                        "output on time": 0
+                },
+                {
+                        "name": "General",
+                        "use limit": 450,
+                        "output": "output2",
                         "last reminder": null,
                         "output on time": 0
                 }
