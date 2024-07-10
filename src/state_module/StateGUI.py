@@ -140,9 +140,9 @@ class StateGUI:
                 else:
                     self.current_step = self.current_program['steps'][0]
                     self.current_step_number = self.program_steps.index(self.current_step)
-            self.program_state = False
-            self.program_number = self.current_program['number']
-            self.program_name = self.current_program['name']
-            if self.current_step['type']=='JUMP' and self.program_jumps_left == None:
-                self.program_jumps_left = self.current_step['times']
+                self.program_state = False
+                self.program_number = self.current_program['number']
+                self.program_name = self.current_program['name']
+                if self.current_step['type']=='JUMP' and self.program_jumps_left == None:
+                    self.program_jumps_left = self.current_step['times']
             

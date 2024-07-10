@@ -133,8 +133,19 @@ class ProgramGUI:
                 self.update()
             else:
                 self.err_empty_steps = False
-                self.state.current_program = temp
                 self.state.current_step_number = 0
+                self.state.current_program = {'number': None, 'name': None, 'steps': None}
+                self.state.current_step_number = None
+                self.state.output_state1 = False
+                self.state.output_state2 = False
+                self.state.output_state3 = False
+                self.state.program_jumps_left = None
+                self.state.time_left = None
+                self.state.program_jumps_left = None
+                self.state.soak_time_left = None
+                self.host.state_controller.task_num = 0 
+                self.host.state_controller.stack = [None]
+                self.state.current_program = temp
                 self.state.changeCurrentProgram()
                 self.host.current_screen = 'state'
                 self.host.update_Screen()
