@@ -58,7 +58,7 @@ class MainApp:
         self.hub_frame.grid_rowconfigure((0),weight=1)
         self.time_hub = CTkLabel(self.hub_frame,text=f"{self.current_time}",font=self.def_font)
         self.wifi_status_hub = CTkButton(self.hub_frame, command=self.changeToNetworkScreen, image=self.wifi_status_icon, text='', fg_color="#dad8e5", hover_color="#c1bed2",width=40,height=40)
-        self.conf_hub = CTkButton(self.hub_frame, command=self.change_conf,image=self.file_controller.icons['configuration'],text='', fg_color="#dad8e5", hover_color="#c1bed2",width=40,height=40)
+        self.conf_hub = CTkButton(self.hub_frame, command=self.changeToConfScreen,image=self.file_controller.icons['configuration'],text='', fg_color="#dad8e5", hover_color="#c1bed2",width=40,height=40)
 
         self.current_screen = 'state'
 
@@ -73,7 +73,7 @@ class MainApp:
         self.current_screen = 'network'
         self.update_Screen()
 
-    def change_conf(self):
+    def changeToConfScreen(self):
         self.current_screen = 'conf'
         self.update_Screen()
 

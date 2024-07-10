@@ -17,7 +17,8 @@ class EditorGUI:
         self.drop_font = CTkFont(family="Inter",size=15)
         self.main_frame=CTkFrame(data, fg_color="#F5F5F9")
         self.main_frame.grid_rowconfigure((0,1,2,3,4,5,6,7,8,9),weight=1)
-        self.main_frame.grid_columnconfigure((0,1,2),weight=1)
+        self.main_frame.grid_columnconfigure((0,2),weight=1)
+        self.main_frame.grid_columnconfigure((1),weight=0)
         
         self.name_entry_gui = CTkEntry(self.main_frame, font=self.def_font,height=40, width=200)
         self.name_entry_gui.bind("<Button-1>",self.show_kb_name_gui)
@@ -50,7 +51,8 @@ class EditorGUI:
         self.output3 = CTkCheckBox(self.main_frame,text="Output3", variable=self.outputCheck3, font=self.def_font)
 
         # Falta texto
-        self.soak_time_txt_gui = CTkLabel(self.main_frame, text="Soak duration in minutes", font=self.def_font)
+        self.soak_time_txt_gui = CTkLabel(self.main_frame, text="Duration", font=self.def_font)
+        self.soak_time_txt2_gui = CTkLabel(self.main_frame, text="minutes", font=self.def_font)
         self.soak_entry = CTkEntry(self.main_frame, font=self.def_font, height=40)
         
         self.soak_entry.bind("<Button-1>",self.show_nkb_soak)
@@ -58,7 +60,7 @@ class EditorGUI:
         self.jump_err1 = False
         self.err_jump_previus_n_al = CTkLabel(notify, text="Error: Step selection not allowed, the current step has to be larger than the selected step",image=host.file_controller.icons['alert'],compound="left")
         # Falta texto
-        self.jump_times_txt_gui = CTkLabel(self.main_frame, text="Repetition number", font=self.def_font)
+        self.jump_times_txt_gui = CTkLabel(self.main_frame, text="Repetitions", font=self.def_font)
         self.jump_times = CTkEntry(self.main_frame, font=self.def_font,height=40)
         self.jump_times.bind("<Button-1>",self.show_nkb_jmp_t)
 
@@ -133,7 +135,7 @@ class EditorGUI:
             self.end_notify.grid_forget()
             self.confirm_button.grid_forget()
             self.name_gui.grid(row=0,column=0, sticky="e")
-            self.name_entry_gui.grid(row=0,column=1, sticky="w")
+            self.name_entry_gui.grid(row=0,column=1)
             self.current_step_text.configure(text=f'Current step: {self.current_step}')
             self.current_step_text.grid(row=2,column=1)
             self.type_selector.grid(row=3,column=1)
@@ -147,8 +149,8 @@ class EditorGUI:
                 self.showEND()
             self.next_step_button.grid(row=2,column=2,sticky="w")
             self.back_step_button.grid(row=2,column=0,sticky="e")
-            self.add_step_button.grid(row=3,column=0,pady=(20,0))
-            self.delete_step_button.grid(row=3,column=2, pady=(20,0))
+            self.add_step_button.grid(row=3,column=2,pady=(20,0))
+            self.delete_step_button.grid(row=3,column=0, pady=(20,0))
             self.advance_button.grid(row=0,column=1)
         else:
             self.send_me.grid(row=0,column=1, sticky="w")
@@ -200,7 +202,6 @@ class EditorGUI:
                 if self.steps_list[self.current_step]!= {}:
                     self.current_type = self.steps_list[self.current_step]['type']
                 self.refresh()
-                print(self.current_step)
         except JUMP_EXCEPTION:
             self.jump_err1 = True
             self.update()
@@ -216,7 +217,6 @@ class EditorGUI:
                 else:
                     self.current_type = None
                 self.refresh()
-                print(self.current_step)
         except JUMP_EXCEPTION:
             self.jump_err1 = True
             self.update()
@@ -296,7 +296,22 @@ class EditorGUI:
 
     def refresh(self):
         self.loadStepConf()
-        self.host.update_Screen()
+        self.output1.grid_forget()
+        self.output2.grid_forget()
+        self.output3.grid_forget()
+        self.soak_time_txt_gui.grid_forget()
+        self.soak_time_txt2_gui.grid_forget()
+        self.soak_entry.grid_forget()
+        self.jump_times_txt_gui.grid_forget()
+        self.jump_times.grid_forget()
+        self.jump_step_txt_gui.grid_forget()
+        self.jump_step.grid_forget()
+        self.err_jump_previus_n_al.grid_forget()
+        self.end_options_gui.grid_forget()
+        self.end_switch_prog.grid_forget()
+        self.end_switch_prog.grid_forget()
+        self.update()
+        #self.host.update_Screen()
 
 
     def oldStep(self,old):
@@ -377,13 +392,14 @@ class EditorGUI:
 
     def showSOAK(self):
         self.soak_time_txt_gui.grid(row=4,column=0, sticky="e")
-        self.soak_entry.grid(row=4,column=1,sticky="w")
+        self.soak_time_txt2_gui.grid(row=4,column=2, sticky="w")
+        self.soak_entry.grid(row=4,column=1)
 
     def showJUMP(self):
         self.jump_times_txt_gui.grid(row=4,column=0, sticky="e")
-        self.jump_times.grid(row=4,column=1,sticky="w")
+        self.jump_times.grid(row=4,column=1)
         self.jump_step_txt_gui.grid(row=5,column=0,sticky="e")
-        self.jump_step.grid(row=5,column=1, pady=(0,10), sticky="w")
+        self.jump_step.grid(row=5,column=1, pady=(0,10))
         if self.jump_err1:
             self.err_jump_previus_n_al.grid(row=0,column=0)
         else:

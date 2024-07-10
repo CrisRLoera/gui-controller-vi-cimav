@@ -42,7 +42,7 @@ class StateGUI:
         self.out2_label = CTkLabel(self.left_frame,font=self.def_font)
         self.out3_label = CTkLabel(self.left_frame,font=self.def_font)
 
-        self.run_program_button_gui = CTkButton(nav, command=self.run_current_program, font=self.def_font, width=80,height=40)
+        self.run_program_button_gui = CTkButton(nav, command=self.run_current_program, font=self.def_font, width=80,height=40, border_color="#3d3846", border_width=2, text_color="black")
         self.selec_program_button_gui = CTkButton(nav, text='Program', command=self.changeProgramScreen, font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
 
         self.err_no_current_program = False

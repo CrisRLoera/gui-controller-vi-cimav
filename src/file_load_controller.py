@@ -60,9 +60,9 @@ class FileLoadController:
                 print(program)
                 return program
 
-    def getProgramByNum(self,name):
+    def getProgramByNum(self,number):
         for program in self.programs_list:
-            if name == program['number']:
+            if number == program['number']:
                 return program
 
     def diffName(self,num,name):
