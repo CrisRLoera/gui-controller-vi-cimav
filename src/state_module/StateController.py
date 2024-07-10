@@ -12,7 +12,7 @@ class SOAK:
             self.time = time
 
     def decrease(self):
-        set_seconds = 5
+        set_seconds = 60
         current_time = datetime.datetime.now()
         if (current_time - self.created_time).total_seconds() > set_seconds:
             self.time -=1
@@ -256,7 +256,7 @@ class ControlFlow:
         self.output3 = out3
 
     def trackOutputs(self):
-        set_seconds = 5
+        set_seconds = 60
         current_time = datetime.datetime.now()
         if self.output1 and self.output1_on_time !=None:
             if (current_time - self.output1_on_time).total_seconds() > set_seconds:
@@ -272,7 +272,7 @@ class ControlFlow:
             if (current_time - self.output2_on_time).total_seconds() > set_seconds:
                 if (current_time - self.output2_on_time).total_seconds() > set_seconds:
                     for device in self.conf_file['maintenance devices']:
-                        if device['output']=="output1":
+                        if device['output']=="output2":
                             device['output on time'] += 1
         elif self.output2 and self.output2_on_time == None:
             self.output2_on_time = datetime.datetime.now()
@@ -283,7 +283,7 @@ class ControlFlow:
             if (current_time - self.output3_on_time).total_seconds() > set_seconds:
                 if (current_time - self.output3_on_time).total_seconds() > set_seconds:
                     for device in self.conf_file['maintenance devices']:
-                        if device['output']=="output1":
+                        if device['output']=="output3":
                             device['output on time'] += 1
         elif self.output3 and self.output3_on_time == None:
             self.output3_on_time = datetime.datetime.now()

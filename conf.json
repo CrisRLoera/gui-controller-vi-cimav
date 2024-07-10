@@ -10,14 +10,14 @@
                         "use limit": 450,
                         "output": "output1",
                         "last reminder": null,
-                        "output on time": 66
+                        "output on time": 0
                 },
                 {
                         "name": "Bandas",
                         "use limit": 450,
                         "output": "output1",
                         "last reminder": null,
-                        "output on time": 66
+                        "output on time": 0
                 },
                 {
                         "name": "Buje",
