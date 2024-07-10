@@ -1,4 +1,4 @@
-from customtkinter import CTkLabel, CTkButton, CTkOptionMenu, CTkToplevel, CTkEntry, CTkFrame
+from customtkinter import CTkLabel, CTkButton, CTkOptionMenu, CTkToplevel, CTkEntry, CTkFrame, CTkFont
 from src.keyboard_module import VirtualKeyboard
 
 class ProgramGUI:
@@ -7,32 +7,35 @@ class ProgramGUI:
         self.app = host.gui_app
         self.state = state
         self.editor = editor
-        self.main_frame = CTkFrame(data)
+        self.main_frame = CTkFrame(data,fg_color="#F5F5F9")
         self.main_frame.grid_rowconfigure((0,1,2,3,4),weight=1)
         self.main_frame.grid_columnconfigure((0),weight=1)
         #self.menu = CTkLabel(app,text="Programas")
         self.selected = None
         self.flag_unselected = CTkLabel(notify, text="Select a program to load")
+        self.def_font=self.host.def_font
+        self.drop_font =CTkFont(family="Inter",size=15)
         
-        self.create_program_button = CTkButton(nav, text="Create", command=self.create_program)
-        self.cancel_program_gui = CTkButton(nav,text='Cancel', command=self.cancel)
+        self.create_program_button = CTkButton(nav, text="Create", command=self.create_program,font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
 
-        self.program_selector_gui = CTkOptionMenu(self.main_frame, command=self.setSelection)
-        self.load_program_gui = CTkButton(self.main_frame,text="Load",command=self.update_program)
-        self.edit_program_gui = CTkButton(self.main_frame,text="Edit",command=self.mv_to_edit)
-        self.delete_program_button = CTkButton(self.main_frame, text="Del", command=self.delete_program)
-        self.clone_program_button = CTkButton(self.main_frame, text="Clone", command=self.clone_program)
+        self.cancel_program_gui = CTkButton(nav,text='Cancel', command=self.cancel,font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
+
+        self.program_selector_gui = CTkOptionMenu(self.main_frame, command=self.setSelection, font=self.def_font, width=200, height=40,fg_color="#dad8e5",button_color="#625875", button_hover_color="#50495f", text_color="black",dropdown_text_color="black", dropdown_font=self.drop_font)
+        self.load_program_gui = CTkButton(self.main_frame,text="Load",command=self.update_program,font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
+        self.edit_program_gui = CTkButton(self.main_frame,text="Edit",command=self.mv_to_edit, font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
+        self.delete_program_button = CTkButton(self.main_frame, text="Del", command=self.delete_program, font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
+        self.clone_program_button = CTkButton(self.main_frame, text="Clone", command=self.clone_program, font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
         self.popup_label = CTkLabel(self.main_frame, text="New program name:")
-        self.popup_entry = CTkEntry(self.main_frame)
+        self.popup_entry = CTkEntry(self.main_frame, font=self.def_font,height=40)
         self.popup_entry.bind("<Button-1>",self.show_keyboard)
-        self.create_button = CTkButton(self.main_frame, text="Confirm", command=lambda: self.create_event(self.popup_entry.get()))
-        self.cancel_creation_button = CTkButton(self.main_frame, text="Cancel", command=self.cancel_creation)
+        self.create_button = CTkButton(self.main_frame, text="Confirm", command=lambda: self.create_event(self.popup_entry.get()), font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
+        self.cancel_creation_button = CTkButton(self.main_frame, text="Cancel", command=self.cancel_creation, font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
         
         self.program_selector_gui.set("")
         self.setProgramsList()
 
         self.err_empty_steps = False
-        self.err_empty_steps_msg = CTkLabel(notify, text="Error: Can´t load the selected program is empty")
+        self.err_empty_steps_msg = CTkLabel(notify, image=self.host.file_controller.icons['alert'], text="Error: Can´t load the selected program is empty", compound="left")
         self.onCreation= False
         self.keyboard_frame = None
 
@@ -43,7 +46,7 @@ class ProgramGUI:
     def show_keyboard(self,event):
         if self.keyboard_frame is not None:
             self.keyboard_frame.destroy()
-        self.keyboard_frame = VirtualKeyboard(self.host.gui_app, self.popup_entry)
+        self.keyboard_frame = VirtualKeyboard(self.host.gui_app, self.popup_entry,self.host)
         self.keyboard_frame.grid(row=4,column=0)
 
     def cancel_creation(self):

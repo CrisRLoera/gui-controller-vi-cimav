@@ -1,4 +1,5 @@
-from customtkinter import CTkLabel, CTkButton, CTkEntry, CTkFrame
+from os import pardir
+from customtkinter import CTkLabel, CTkButton, CTkEntry, CTkFrame, CTkFont
 
 class StateGUI:
     def __init__(self,data,nav,notify,host):
@@ -18,31 +19,34 @@ class StateGUI:
         self.output_state3 = False
 
         self.time_left = None
+
+        self.def_font = CTkFont(family="Inter",size=20)
+        self.dark_gray = "#3d3846"
         
-        self.left_frame = CTkFrame(data)
+        self.left_frame = CTkFrame(data,fg_color="#F5F5F9")
         self.left_frame.grid_rowconfigure((0,1,2,3,4,5),weight=1)
         self.left_frame.grid_columnconfigure((0),weight=1)
-        self.right_frame = CTkFrame(data)
+        self.right_frame = CTkFrame(data,fg_color="#F5F5F9")
         self.right_frame.grid_rowconfigure((0),weight=1)
         self.right_frame.grid_columnconfigure((0),weight=1)
         #self.title = CTkLabel(app, text='Menu')
-        self.program_state_gui = CTkLabel(self.left_frame, text=f'State: {self.program_state}')
-        self.name_gui = CTkLabel(self.left_frame, text=f"Program name: {self.program_name}")
-        self.number_gui = CTkLabel(self.left_frame, text=f"Program number: {self.program_number}")
+        self.program_state_gui = CTkLabel(self.left_frame, text=f'State: {self.program_state}', font=self.def_font)
+        self.name_gui = CTkLabel(self.left_frame, text=f"Program name: {self.program_name}", font=self.def_font)
+        self.number_gui = CTkLabel(self.left_frame, text=f"Program number: {self.program_number}", font=self.def_font)
 
-        self.current_step_gui = CTkLabel(self.right_frame, text=f"Current step: {self.current_step_number}")
-        self.jumps_left_gui = CTkLabel(self.right_frame)
-        self.soak_time_left_gui = CTkLabel(self.right_frame)
+        self.current_step_gui = CTkLabel(self.right_frame, text=f"Current step: {self.current_step_number}", font=self.def_font)
+        self.jumps_left_gui = CTkLabel(self.right_frame, font=self.def_font)
+        self.soak_time_left_gui = CTkLabel(self.right_frame, font=self.def_font)
 
-        self.out1_label = CTkLabel(self.left_frame)
-        self.out2_label = CTkLabel(self.left_frame)
-        self.out3_label = CTkLabel(self.left_frame)
+        self.out1_label = CTkLabel(self.left_frame,font=self.def_font)
+        self.out2_label = CTkLabel(self.left_frame,font=self.def_font)
+        self.out3_label = CTkLabel(self.left_frame,font=self.def_font)
 
-        self.run_program_button_gui = CTkButton(nav, command=self.run_current_program)
-        self.selec_program_button_gui = CTkButton(nav, text='Program', command=self.changeProgramScreen)
+        self.run_program_button_gui = CTkButton(nav, command=self.run_current_program, font=self.def_font, width=80,height=40)
+        self.selec_program_button_gui = CTkButton(nav, text='Program', command=self.changeProgramScreen, font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
 
         self.err_no_current_program = False
-        self.err_no_crnt_prg_text = CTkLabel(notify, text='Error: No current program to run')
+        self.err_no_crnt_prg_text = CTkLabel(notify,image=self.host.file_controller.icons['alert'], text='Error: No current program to run', compound="left")
         self.empty = CTkLabel(notify, text=" ")
 
     def update(self):
@@ -76,12 +80,14 @@ class StateGUI:
 
         self.program_state_gui.configure(text=f"State: {'Running'if self.program_state else 'Stop'}")
         self.run_program_button_gui.configure(text='Stop'if self.program_state else 'Run')
-        self.run_program_button_gui.grid(row=0,column=0, sticky="s")
+        self.run_program_button_gui.grid(row=0,column=0, sticky="s",padx=3, pady=3)
         self.program_steps = self.current_program['steps']
         if self.program_state == False:
             self.selec_program_button_gui.grid(row=0,column=2, sticky="s")
+            self.run_program_button_gui.configure(fg_color="#06f432",hover_color="#25f648")
         else:
             self.selec_program_button_gui.grid_forget()
+            self.run_program_button_gui.configure(fg_color="#e01b24",hover_color="#f63d45")
         if self.err_no_current_program:
             self.err_no_crnt_prg_text.grid(row=0,column=0)
             self.empty.grid_forget()

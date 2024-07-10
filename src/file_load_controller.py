@@ -1,5 +1,7 @@
 import os
 import json
+from PIL import Image
+from customtkinter import CTkImage
 
 class FileLoadController:
     def __init__(self):
@@ -7,6 +9,14 @@ class FileLoadController:
         self.programs_list = self.getProgramsList()
         self.conf_file = self.loadConf()
         self.current_created_id = self.conf_file["creation_id"]
+        self.icons = {}
+        self.importIcons()
+        
+    
+    def importIcons(self):
+        imag_names = ['arrow-down','backspace','cancel','configuration','confirm','delete','edit','shift','space','wifi-high','wifi-problem','alert','left','right','info','add']
+        for imag in imag_names:
+            self.icons[imag]=CTkImage(Image.open(f"src/icons/{imag}.png"))
 
     def loadConf(self):
         base_path = os.path.abspath(os.path.dirname(__file__))

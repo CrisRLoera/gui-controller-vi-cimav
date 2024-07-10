@@ -1,4 +1,5 @@
-from customtkinter import CTkLabel, CTkEntry, CTkCheckBox, CTkOptionMenu, CTkButton, CTkToplevel, CTkFrame
+from os import fpathconf
+from customtkinter import CTkLabel, CTkEntry, CTkCheckBox, CTkOptionMenu, CTkButton, CTkToplevel, CTkFrame, CTkFont
 from tkinter import StringVar, BooleanVar
 from src.keyboard_module import VirtualKeyboard,VirtualNumKeyboard
 
@@ -12,11 +13,13 @@ class EditorGUI:
         self.steps_list = None
         self.app = host.gui_app
         self.number = None
-        self.main_frame=CTkFrame(data)
+        self.def_font = host.def_font
+        self.drop_font = CTkFont(family="Inter",size=15)
+        self.main_frame=CTkFrame(data, fg_color="#F5F5F9")
         self.main_frame.grid_rowconfigure((0,1,2,3,4,5,6,7,8,9),weight=1)
         self.main_frame.grid_columnconfigure((0,1,2),weight=1)
         
-        self.name_entry_gui = CTkEntry(self.main_frame)
+        self.name_entry_gui = CTkEntry(self.main_frame, font=self.def_font,height=40, width=200)
         self.name_entry_gui.bind("<Button-1>",self.show_kb_name_gui)
         self.host = host
         self.current_step = 0
@@ -28,11 +31,11 @@ class EditorGUI:
         self.types = ["SET","SOAK","JUMP","END"]
         self.end_options = ["PowerOFF","Restart","SwitchProgram"]
 
-        self.name_gui = CTkLabel(self.main_frame,text='Program Name: ')
+        self.name_gui = CTkLabel(self.main_frame,text='Program Name',font=self.def_font)
         self.err_name = False
-        self.err_name_exist = CTkLabel(notify, text="Error: Program name already exist")
+        self.err_name_exist = CTkLabel(notify, text="Error: Program name already exist", image=host.file_controller.icons['alert'], compound="left")
 
-        self.type_selector = CTkOptionMenu(self.main_frame,values=self.types, command=self.select_type)
+        self.type_selector = CTkOptionMenu(self.main_frame,values=self.types, command=self.select_type, font=self.def_font, width=200, height=40,fg_color="#dad8e5",button_color="#625875", button_hover_color="#50495f", text_color="black",dropdown_text_color="black", dropdown_font=self.drop_font)
         self.type_selector.set(self.types[0])
 
         self.outputCheck1 = BooleanVar()
@@ -40,53 +43,53 @@ class EditorGUI:
         self.outputCheck3 = BooleanVar()
 
         self.set_email_enable = BooleanVar()
-        self.advance_button = CTkButton(nav, text="Advanced", command=self.open_advance)
+        self.advance_button = CTkButton(nav, text="Advanced", command=self.open_advance, font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
 
-        self.output1 = CTkCheckBox(self.main_frame,text="Output1", variable=self.outputCheck1)
-        self.output2 = CTkCheckBox(self.main_frame,text="Output2", variable=self.outputCheck2)
-        self.output3 = CTkCheckBox(self.main_frame,text="Output3", variable=self.outputCheck3)
+        self.output1 = CTkCheckBox(self.main_frame,text="Output1", variable=self.outputCheck1, font=self.def_font)
+        self.output2 = CTkCheckBox(self.main_frame,text="Output2", variable=self.outputCheck2, font=self.def_font)
+        self.output3 = CTkCheckBox(self.main_frame,text="Output3", variable=self.outputCheck3, font=self.def_font)
 
         # Falta texto
-        self.soak_time_txt_gui = CTkLabel(self.main_frame, text="Soak duration in minutes")
-        self.soak_entry = CTkEntry(self.main_frame)
+        self.soak_time_txt_gui = CTkLabel(self.main_frame, text="Soak duration in minutes", font=self.def_font)
+        self.soak_entry = CTkEntry(self.main_frame, font=self.def_font, height=40)
         
         self.soak_entry.bind("<Button-1>",self.show_nkb_soak)
         
         self.jump_err1 = False
-        self.err_jump_previus_n_al = CTkLabel(notify, text="Error: Step selection not allowed, the current step has to be larger than the selected step")
+        self.err_jump_previus_n_al = CTkLabel(notify, text="Error: Step selection not allowed, the current step has to be larger than the selected step",image=host.file_controller.icons['alert'],compound="left")
         # Falta texto
-        self.jump_times_txt_gui = CTkLabel(self.main_frame, text="Repetition number")
-        self.jump_times = CTkEntry(self.main_frame)
+        self.jump_times_txt_gui = CTkLabel(self.main_frame, text="Repetition number", font=self.def_font)
+        self.jump_times = CTkEntry(self.main_frame, font=self.def_font,height=40)
         self.jump_times.bind("<Button-1>",self.show_nkb_jmp_t)
 
-        self.jump_step_txt_gui = CTkLabel(self.main_frame, text="Step to jump")
-        self.jump_step = CTkEntry(self.main_frame)
+        self.jump_step_txt_gui = CTkLabel(self.main_frame, text="Step to jump", font=self.def_font)
+        self.jump_step = CTkEntry(self.main_frame, font=self.def_font, height=40)
         self.jump_step.bind("<Button-1>",self.show_nkb_jmp_s)
        
-        self.current_step_text = CTkLabel(self.main_frame)
+        self.current_step_text = CTkLabel(self.main_frame, font=self.def_font)
 
-        self.end_options_gui = CTkOptionMenu(self.main_frame, values=self.end_options, command=self.end_program_select)
-        self.end_switch_prog = CTkOptionMenu(self.main_frame, command=self.end_program_select)
-
-        self.next_step_button = CTkButton(self.main_frame,text="Next", command=self.next_step)
-        self.back_step_button = CTkButton(self.main_frame,text="Back", command=self.back_step)
-        self.add_step_button = CTkButton(self.main_frame, text="Add Step", command=self.add_step)
-        self.delete_step_button = CTkButton(self.main_frame, text="Delete Step", command=self.delete_current_step)
-        self.save_button = CTkButton(nav,text="Save Program", command=self.save_program)
-        self.cancel_button = CTkButton(nav,text="Cancel Edition", command=self.cancel_edition)
-        self.err_delet_first_step = CTkLabel(notify, text="Error: Can´t delete first step")
+        self.end_options_gui = CTkOptionMenu(self.main_frame, values=self.end_options, command=self.end_program_select, font=self.def_font, width=200, height=40,fg_color="#dad8e5",button_color="#625875", button_hover_color="#50495f", text_color="black",dropdown_text_color="black", dropdown_font=self.drop_font)
+        self.end_switch_prog = CTkOptionMenu(self.main_frame, command=self.end_program_select, font=self.def_font, width=200, height=40,fg_color="#dad8e5",button_color="#625875", button_hover_color="#50495f", text_color="black",dropdown_text_color="black", dropdown_font=self.drop_font)
+        # nav current step
+        self.next_step_button = CTkButton(self.main_frame, command=self.next_step, image=host.file_controller.icons['right'],text='', fg_color="#dad8e5", hover_color="#c1bed2",width=40,height=40)
+        self.back_step_button = CTkButton(self.main_frame, command=self.back_step, image=host.file_controller.icons['left'],text='', fg_color="#dad8e5", hover_color="#c1bed2",width=40,height=40)
+        self.add_step_button = CTkButton(self.main_frame, text="Add Step", command=self.add_step, font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
+        self.delete_step_button = CTkButton(self.main_frame, text="Delete Step", command=self.delete_current_step, font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
+        self.save_button = CTkButton(nav,text="Save Program", command=self.save_program, font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
+        self.cancel_button = CTkButton(nav,text="Cancel Edition", command=self.cancel_edition, font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
+        self.err_delet_first_step = CTkLabel(notify, text="Error: Can´t delete first step", image=host.file_controller.icons['alert'], compound="left")
         # Preferences Widgets
         self.onAdvance = False
-        self.advance_email = CTkLabel(self.main_frame, text="Responsible email")
-        self.advance_email_entry = CTkEntry(self.main_frame)
+        self.advance_email = CTkLabel(self.main_frame, text="Responsible email", font=self.def_font)
+        self.advance_email_entry = CTkEntry(self.main_frame, font=self.def_font, height=40, width=300)
         self.advance_email_entry.bind("<Button-1>",self.show_kb_adv_email)
-        self.step_change = CTkCheckBox(self.main_frame,text="Let me know every step change")
-        self.interruption = CTkCheckBox(self.main_frame,text="Notify me of interruptions")
-        self.end_notify = CTkCheckBox(self.main_frame,text="Notify at the end of the program")
-        self.send_me = CTkCheckBox(self.main_frame,text="Send me and email", variable=self.set_email_enable, command=self.host.update_Screen)
+        self.step_change = CTkCheckBox(self.main_frame,text="Let me know every step change", font=self.def_font)
+        self.interruption = CTkCheckBox(self.main_frame,text="Notify me of interruptions", font=self.def_font)
+        self.end_notify = CTkCheckBox(self.main_frame,text="Notify at the end of the program", font=self.def_font)
+        self.send_me = CTkCheckBox(self.main_frame,text="Send me and email", variable=self.set_email_enable, command=self.host.update_Screen, font=self.def_font)
 
-        self.confirm_button = CTkButton(self.main_frame, text="Confirm", command=lambda: self.confirm(self.advance_email_entry.get(),self.step_change.get(),self.interruption.get(),self.end_notify.get()))
-        self.cancel_a_button = CTkButton(self.main_frame, text="Back", command=self.close_advance)
+        self.confirm_button = CTkButton(self.main_frame, text="Confirm", command=lambda: self.confirm(self.advance_email_entry.get(),self.step_change.get(),self.interruption.get(),self.end_notify.get()),font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
+        self.cancel_a_button = CTkButton(self.main_frame, text="Back", command=self.close_advance, font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
         self.keyboard_frame = None
 
     def open_advance(self):
@@ -129,8 +132,8 @@ class EditorGUI:
             self.interruption.grid_forget()
             self.end_notify.grid_forget()
             self.confirm_button.grid_forget()
-            self.name_gui.grid(row=0,column=1)
-            self.name_entry_gui.grid(row=1,column=1)
+            self.name_gui.grid(row=0,column=0, sticky="e")
+            self.name_entry_gui.grid(row=0,column=1, sticky="w")
             self.current_step_text.configure(text=f'Current step: {self.current_step}')
             self.current_step_text.grid(row=2,column=1)
             self.type_selector.grid(row=3,column=1)
@@ -142,19 +145,19 @@ class EditorGUI:
                 self.showJUMP()
             elif self.current_type == 'END':
                 self.showEND()
-            self.next_step_button.grid(row=2,column=2)
-            self.back_step_button.grid(row=2,column=0)
-            self.add_step_button.grid(row=8,column=1)
-            self.delete_step_button.grid(row=9,column=1)
+            self.next_step_button.grid(row=2,column=2,sticky="w")
+            self.back_step_button.grid(row=2,column=0,sticky="e")
+            self.add_step_button.grid(row=3,column=0,pady=(20,0))
+            self.delete_step_button.grid(row=3,column=2, pady=(20,0))
             self.advance_button.grid(row=0,column=1)
         else:
-            self.send_me.grid(row=0,column=1)
+            self.send_me.grid(row=0,column=1, sticky="w")
             if self.set_email_enable.get():
-                self.advance_email.grid(row=1,column=1)
-                self.advance_email_entry.grid(row=2,column=1)
-                self.step_change.grid(row=3,column=1)
-                self.interruption.grid(row=4,column=1)
-                self.end_notify.grid(row=5,column=1)
+                self.advance_email.grid(row=1,column=1, sticky="w")
+                self.advance_email_entry.grid(row=2,column=1, sticky="w")
+                self.step_change.grid(row=3,column=1, sticky="w")
+                self.interruption.grid(row=4,column=1, sticky="w")
+                self.end_notify.grid(row=5,column=1, sticky="w")
             else:
                 self.advance_email.grid_forget()
                 self.advance_email_entry.grid_forget()
@@ -373,14 +376,14 @@ class EditorGUI:
         self.output3.grid(row=6,column=1)
 
     def showSOAK(self):
-        self.soak_time_txt_gui.grid(row=4,column=1)
-        self.soak_entry.grid(row=5,column=1)
+        self.soak_time_txt_gui.grid(row=4,column=0, sticky="e")
+        self.soak_entry.grid(row=4,column=1,sticky="w")
 
     def showJUMP(self):
-        self.jump_times_txt_gui.grid(row=4,column=1)
-        self.jump_times.grid(row=5,column=1)
-        self.jump_step_txt_gui.grid(row=6,column=1)
-        self.jump_step.grid(row=7,column=1)
+        self.jump_times_txt_gui.grid(row=4,column=0, sticky="e")
+        self.jump_times.grid(row=4,column=1,sticky="w")
+        self.jump_step_txt_gui.grid(row=5,column=0,sticky="e")
+        self.jump_step.grid(row=5,column=1, pady=(0,10), sticky="w")
         if self.jump_err1:
             self.err_jump_previus_n_al.grid(row=0,column=0)
         else:
@@ -397,31 +400,31 @@ class EditorGUI:
     def show_kb_name_gui(self,event):
         if self.keyboard_frame is not None:
             self.keyboard_frame.destroy()
-        self.keyboard_frame = VirtualKeyboard(self.host.gui_app, self.name_entry_gui)
+        self.keyboard_frame = VirtualKeyboard(self.host.gui_app, self.name_entry_gui, self.host)
         self.keyboard_frame.grid(row=4,column=0)
 
     def show_nkb_jmp_t(self,event):
         if self.keyboard_frame is not None:
             self.keyboard_frame.destroy()
-        self.keyboard_frame = VirtualNumKeyboard(self.host.gui_app, self.jump_times)
+        self.keyboard_frame = VirtualNumKeyboard(self.host.gui_app, self.jump_times, self.host)
         self.keyboard_frame.grid(row=4,column=0)
 
     def show_nkb_jmp_s(self,event):
         if self.keyboard_frame is not None:
             self.keyboard_frame.destroy()
-        self.keyboard_frame = VirtualNumKeyboard(self.host.gui_app, self.jump_step)
+        self.keyboard_frame = VirtualNumKeyboard(self.host.gui_app, self.jump_step, self.host)
         self.keyboard_frame.grid(row=4,column=0)
 
     def show_nkb_soak(self,event):
         if self.keyboard_frame is not None:
             self.keyboard_frame.destroy()
-        self.keyboard_frame = VirtualNumKeyboard(self.host.gui_app, self.soak_entry)
+        self.keyboard_frame = VirtualNumKeyboard(self.host.gui_app, self.soak_entry, self.host)
         self.keyboard_frame.grid(row=4,column=0)
 
     def show_kb_adv_email(self,event):
         if self.keyboard_frame is not None:
             self.keyboard_frame.destroy()
-        self.keyboard_frame = VirtualKeyboard(self.host.gui_app, self.advance_email_entry)
+        self.keyboard_frame = VirtualKeyboard(self.host.gui_app, self.advance_email_entry, self.host)
         self.keyboard_frame.grid(row=4,column=0)
 
 

@@ -1,3 +1,4 @@
+from customtkinter.windows.widgets import font
 from src.network_module.NetworkGUI import NetworkGUI
 from src.state_module.StateGUI import StateGUI
 from src.state_module.StateController import ControlFlow
@@ -8,19 +9,21 @@ from src.RecoveryController import RecoveryController
 from src.network_module.EmailController import EmailController
 from src.config_module.ConfigurationGUI import ConfigurationGUI
 import nmcli
-from customtkinter import CTk, CTkLabel, CTkButton, CTkToplevel,CTkFrame
+from customtkinter import CTk, CTkLabel, CTkButton, CTkToplevel,CTkFrame,FontManager, CTkFont
 #import RPi.GPIO as GPIO
 import datetime
 
 class MainApp:
     def __init__(self):
         self.gui_app = CTk()
+        FontManager.load_font("/home/crisdev/Descargas/Inter.ttf")
         self.gui_app.geometry("800x480")
 #        self.gui_app.attributes("-fullscreen", True)
         self.gui_app.grid_columnconfigure((0), weight=1)
         self.gui_app.grid_rowconfigure((0,2,3,4), weight=0)
         self.gui_app.grid_rowconfigure((1), weight=1)
         self.current_screen = ''
+        self.def_font = CTkFont(family="Inter",size=20)
         
         self.file_controller = FileLoadController()
         self.recovery_controller = RecoveryController(self)
@@ -31,11 +34,11 @@ class MainApp:
         self.data_frame.grid_columnconfigure((0,1),weight=1)
         self.data_frame.grid_rowconfigure((0),weight=1)
 
-        self.nav_frame = CTkFrame(self.gui_app)
+        self.nav_frame = CTkFrame(self.gui_app,fg_color="#F5F5F9")
         self.nav_frame.grid_columnconfigure((0,1,2),weight=1)
         self.nav_frame.grid_rowconfigure((0),weight=1)
 
-        self.notify_frame = CTkFrame(self.gui_app)
+        self.notify_frame = CTkFrame(self.gui_app,fg_color="#F5F5F9")
         self.notify_frame.grid_columnconfigure((0),weight=1)
         self.notify_frame.grid_rowconfigure((0),weight=1)
 
@@ -46,15 +49,16 @@ class MainApp:
         self.program_screen = ProgramGUI(self.data_frame,self.nav_frame,self.notify_frame,self,self.state_screen,self.editor_screen)
         
 
-        self.wifi_status_icon = '󰖪'
+        self.wifi_status_icon = self.file_controller.icons['wifi-problem']
         self.current_time = datetime.datetime.now()
         
-        self.hub_frame = CTkFrame(self.gui_app)
-        self.hub_frame.grid_columnconfigure((0,1,2,3),weight=1)
+        self.hub_frame = CTkFrame(self.gui_app,fg_color="#F5F5F9")
+        self.hub_frame.grid_columnconfigure((0,1),weight=0)
+        self.hub_frame.grid_columnconfigure((2,3),weight=1)
         self.hub_frame.grid_rowconfigure((0),weight=1)
-        self.time_hub = CTkLabel(self.hub_frame,text=f"{self.current_time}")
-        self.wifi_status_hub = CTkButton(self.hub_frame,text=f'{self.wifi_status_icon}', command=self.changeToNetworkScreen)
-        self.conf_hub = CTkButton(self.hub_frame, text="configuration", command=self.change_conf)
+        self.time_hub = CTkLabel(self.hub_frame,text=f"{self.current_time}",font=self.def_font)
+        self.wifi_status_hub = CTkButton(self.hub_frame, command=self.changeToNetworkScreen, image=self.wifi_status_icon, text='', fg_color="#dad8e5", hover_color="#c1bed2",width=40,height=40)
+        self.conf_hub = CTkButton(self.hub_frame, command=self.change_conf,image=self.file_controller.icons['configuration'],text='', fg_color="#dad8e5", hover_color="#c1bed2",width=40,height=40)
 
         self.current_screen = 'state'
 
@@ -78,10 +82,12 @@ class MainApp:
         dev_list = nmcli.device.status()
         for dev in dev_list:
             if dev.connection != None and dev.device_type == 'wifi':
-                self.wifi_status_icon = 'connect'
+                self.wifi_status_icon = self.file_controller.icons['wifi-high']
+                self.wifi_status_hub.configure(fg_color="#25f648", hover_color="#06f432")
                 self.update_hub()
                 return True
-        self.wifi_status_icon = 'disconnected'
+        self.wifi_status_icon = self.file_controller.icons['wifi-problem']
+        self.wifi_status_hub.configure(fg_color="#f63d45", hover_color="#e01b24")
         self.update_hub()
         return False
 
@@ -121,9 +127,9 @@ class MainApp:
         self.nav_frame.grid(row=2,column=0,sticky="we")
         self.notify_frame.grid(row=3,column=0,sticky="we")
 
-        self.wifi_status_hub.grid(row=0,column=0)
-        self.conf_hub.grid(row=0, column=1)
-        self.time_hub.grid(row=0, column=2, columnspan=2)
+        self.wifi_status_hub.grid(row=0,column=0,pady=(5,0),padx=(5,0),sticky="w")
+        self.conf_hub.grid(row=0, column=1, pady=(5,0),padx=(5,0),sticky="w")
+        self.time_hub.grid(row=0, column=2, columnspan=2, sticky="e",padx=(0,5))
 
         
         if self.current_screen == 'state':
@@ -156,8 +162,8 @@ class MainApp:
         frame.grid_forget()
 
     def update_hub(self):
-        self.wifi_status_hub.configure(text=self.wifi_status_icon)
-        self.time_hub.configure(text=self.current_time)
+        self.wifi_status_hub.configure(image=self.wifi_status_icon)
+        self.time_hub.configure(text=self.current_time.strftime("%A %d-%m-%Y %H:%M"))
 
 if __name__ == "__main__":
     try:
