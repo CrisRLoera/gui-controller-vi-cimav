@@ -29,6 +29,7 @@ class FileLoadController:
         base_path = os.path.abspath(os.path.dirname(__file__))
         path = os.path.join(base_path,'../conf.json')
         with open (path, "w") as file:
+            print(self.conf_file)
             json.dump(self.conf_file,file, indent=8)
 
     def reload(self):
@@ -87,7 +88,12 @@ class FileLoadController:
             "number": int(self.conf_file['creation_id']),
             "name": f"{name}",
             "steps": [{}],
-            "file_name": f"{name}.json"}
+            "file_name": f"{name}.json",
+            "responsible": None,
+            "interrupt": False,
+            "end notify": False,
+            "step change notify": False 
+        }
         print(schema["file_name"])
         programs_path = '../programs/'+schema['file_name']
         base_path = os.path.abspath(os.path.dirname(__file__))

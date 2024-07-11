@@ -1,6 +1,6 @@
 from os import fpathconf
 from customtkinter import CTkLabel, CTkEntry, CTkCheckBox, CTkOptionMenu, CTkButton, CTkToplevel, CTkFrame, CTkFont
-from tkinter import StringVar, BooleanVar
+from tkinter import StringVar, BooleanVar, IntVar
 from src.keyboard_module import VirtualKeyboard,VirtualNumKeyboard
 
 class JUMP_EXCEPTION(Exception):
@@ -25,10 +25,16 @@ class EditorGUI:
         self.host = host
         self.current_step = 0
         self.current_type = None
+
+        self.check_var = IntVar()
         self.responsible_email = None
         self.interupt_preference = None
+        self.interruption_var = BooleanVar()
         self.step_change_notify = None
+        self.step_chn_not_var = BooleanVar()
         self.end_preference = None
+        self.end_pref_var = BooleanVar()
+
         self.types = ["SET","SOAK","JUMP","END"]
         self.end_options = ["PowerOFF","Restart","SwitchProgram"]
 
@@ -80,14 +86,15 @@ class EditorGUI:
         self.save_button = CTkButton(nav,text="Save Program", command=self.save_program, font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
         self.cancel_button = CTkButton(nav,text="Cancel Edition", command=self.cancel_edition, font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
         self.err_delet_first_step = CTkLabel(notify, text="Error: Can´t delete first step", image=host.file_controller.icons['alert'], compound="left")
+        
         # Preferences Widgets
         self.onAdvance = False
         self.advance_email = CTkLabel(self.main_frame, text="Responsible email", font=self.def_font)
         self.advance_email_entry = CTkEntry(self.main_frame, font=self.def_font, height=40, width=300)
         self.advance_email_entry.bind("<Button-1>",self.show_kb_adv_email)
-        self.step_change = CTkCheckBox(self.main_frame,text="Let me know every step change", font=self.def_font)
-        self.interruption = CTkCheckBox(self.main_frame,text="Notify me of interruptions", font=self.def_font)
-        self.end_notify = CTkCheckBox(self.main_frame,text="Notify at the end of the program", font=self.def_font)
+        self.step_change = CTkCheckBox(self.main_frame,text="Let me know every step change", font=self.def_font, variable=self.step_chn_not_var)
+        self.interruption = CTkCheckBox(self.main_frame,text="Notify me of interruptions", font=self.def_font, variable=self.interruption_var)
+        self.end_notify = CTkCheckBox(self.main_frame,text="Notify at the end of the program", font=self.def_font, variable=self.end_pref_var)
         self.send_me = CTkCheckBox(self.main_frame,text="Send me and email", variable=self.set_email_enable, command=self.host.update_Screen, font=self.def_font)
 
         self.confirm_button = CTkButton(self.main_frame, text="Confirm", command=lambda: self.confirm(self.advance_email_entry.get(),self.step_change.get(),self.interruption.get(),self.end_notify.get()),font=self.def_font, width=100, height=40,fg_color="#dad8e5", hover_color="#c1bed2", border_color="#3d3846", border_width=2, text_color="black")
@@ -100,10 +107,11 @@ class EditorGUI:
 
     def confirm(self,email, pref1,pref2,pref3):  
         if self.set_email_enable.get():
+            print(self.set_email_enable.get())
             self.responsible_email = email
-            self.interupt_preference = pref1
-            self.step_change_notify = pref2
-            self.end_preference = pref3
+            self.interupt_preference = self.interruption_var.get()
+            self.step_change_notify = self.step_chn_not_var.get()
+            self.end_preference = self.end_pref_var.get()
             print(self.interupt_preference)
             print(self.step_change_notify)
             print(self.responsible_email)
@@ -375,6 +383,30 @@ class EditorGUI:
             self.name_entry_gui.configure(textvariable=StringVar(value=''))
             self.name_entry_gui.insert(0,self.program['name'])
             self.number = self.program['number']
+
+            self.responsible_email = self.program['responsible']
+            self.interupt_preference = self.program['interrupt']
+            self.step_change_notify = self.program['end notify']
+            self.end_preference = self.program['step change notify']
+            #self.interruption_var = self.program['interrupt']
+            #self.step_chn_not_var = self.program['end notify']
+            #self.end_pref_var = self.program['step change notify']
+            self.advance_email_entry.configure(textvariable=StringVar(value=''))
+            if self.responsible_email != None:
+                self.advance_email_entry.insert(0, self.program['responsible'])
+            if self.interupt_preference != None:
+                if self.interupt_preference:
+                    self.set_email_enable.set(True)
+                    self.interruption_var.set(True)
+            if self.step_change_notify != None:
+                if self.step_change_notify:
+                    self.set_email_enable.set(True)
+                    self.step_chn_not_var.set(True) 
+            if self.end_preference != None:
+                if self.end_preference:
+                    self.set_email_enable.set(True)
+                    self.end_pref_var.set(True)
+
         if self.program['steps']!=None:
             self.steps_list = self.program['steps']
             if self.steps_list[0]== {}:

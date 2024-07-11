@@ -113,7 +113,7 @@ class MainApp:
                     else:
                         if (device['last reminder']-(datetime.datetime.now())).days >=7:
                             self.email_controller.send_maintenance_email(self.file_controller.conf_file['maintenance'],device['name'])
-                    device['last reminder']=datetime.datetime.now()
+                    device['last reminder']=str(datetime.datetime.now().replace(microsecond=0))
                     self.file_controller.updateConf()
                     self.file_controller.loadConf()
         except:
