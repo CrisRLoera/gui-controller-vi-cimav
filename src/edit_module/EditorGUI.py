@@ -386,8 +386,8 @@ class EditorGUI:
 
             self.responsible_email = self.program['responsible']
             self.interupt_preference = self.program['interrupt']
-            self.step_change_notify = self.program['end notify']
-            self.end_preference = self.program['step change notify']
+            self.step_change_notify = self.program['step change notify']
+            self.end_preference = self.program['end notify']
             #self.interruption_var = self.program['interrupt']
             #self.step_chn_not_var = self.program['end notify']
             #self.end_pref_var = self.program['step change notify']
@@ -398,14 +398,21 @@ class EditorGUI:
                 if self.interupt_preference:
                     self.set_email_enable.set(True)
                     self.interruption_var.set(True)
+                else:
+                    self.interruption_var.set(False)
             if self.step_change_notify != None:
                 if self.step_change_notify:
                     self.set_email_enable.set(True)
-                    self.step_chn_not_var.set(True) 
+                    self.step_chn_not_var.set(True)
+                else:
+                    self.step_chn_not_var.set(False)
             if self.end_preference != None:
                 if self.end_preference:
                     self.set_email_enable.set(True)
                     self.end_pref_var.set(True)
+                else:
+                    self.end_pref_var.set(False)
+
 
         if self.program['steps']!=None:
             self.steps_list = self.program['steps']
