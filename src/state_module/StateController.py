@@ -269,6 +269,7 @@ class ControlFlow:
                 for device in self.conf_file['maintenance devices']:
                     if device['output']=="output1":
                         device['output on time'] += 1
+                        self.output1_on_time = datetime.datetime.now()
         elif self.output1 and self.output1_on_time == None:
             self.output1_on_time = datetime.datetime.now()
         elif self.output1 == False:
@@ -280,6 +281,7 @@ class ControlFlow:
                     for device in self.conf_file['maintenance devices']:
                         if device['output']=="output2":
                             device['output on time'] += 1
+                            self.output2_on_time = datetime.datetime.now()
         elif self.output2 and self.output2_on_time == None:
             self.output2_on_time = datetime.datetime.now()
         elif self.output2 == False:
@@ -291,6 +293,7 @@ class ControlFlow:
                     for device in self.conf_file['maintenance devices']:
                         if device['output']=="output3":
                             device['output on time'] += 1
+                            self.output3_on_time = datetime.datetime.now()
         elif self.output3 and self.output3_on_time == None:
             self.output3_on_time = datetime.datetime.now()
         elif self.output3 == False:

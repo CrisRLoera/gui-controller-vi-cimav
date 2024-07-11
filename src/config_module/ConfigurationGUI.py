@@ -111,7 +111,7 @@ class ConfigurationGUI:
         self.port_entry.insert(0,self.conf_file['port']) 
         self.sender_entry.configure(textvariable=StringVar(value=''))
         self.sender_entry.insert(0,self.conf_file['sender'])
-        
+        self.maintenance_email_entry.configure(textvariable=StringVar(value=''))
         self.maintenance_email_entry.insert(0,self.conf_file['maintenance'])
         
         

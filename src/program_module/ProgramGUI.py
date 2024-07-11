@@ -146,6 +146,9 @@ class ProgramGUI:
                 self.host.state_controller.task_num = 0 
                 self.host.state_controller.stack = [None]
                 self.state.current_program = temp
+                self.host.state_controller.output1_on_time=None
+                self.host.state_controller.output2_on_time=None
+                self.host.state_controller.output3_on_time=None
                 self.state.changeCurrentProgram()
                 self.host.current_screen = 'state'
                 self.host.update_Screen()
