@@ -39,7 +39,7 @@ class EmailController:
         try:
             server.sendmail(msg['From'], msg['To'], msg.as_string())
         except:
-            print("No send email interruption")
+            print("No send email step change")
         server.quit()
 
 # mandar correo al finalizar
@@ -57,7 +57,7 @@ class EmailController:
         try:
             server.sendmail(msg['From'], msg['To'], msg.as_string())
         except:
-            print("No send email interruption")
+            print("No send email end insterruption")
         server.quit()
 
 
@@ -77,7 +77,7 @@ class EmailController:
         try:
             server.sendmail(msg['From'], msg['To'], msg.as_string())
         except:
-            print("No send email interruption")
+            print("No send email interruption maintenance")
         server.quit()
 
 

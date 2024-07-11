@@ -1,3 +1,4 @@
+from sys import exec_prefix
 from customtkinter.windows.widgets import font
 from src.network_module.NetworkGUI import NetworkGUI
 from src.state_module.StateGUI import StateGUI
@@ -107,17 +108,21 @@ class MainApp:
     def check_reminder(self):
         try:
             for device in self.file_controller.conf_file['maintenance devices']:
-                if (device['use limit']*60)>= device['output on time']:
+                if (device['use limit']*60)<= device['output on time']:
                     if device['last reminder']==None:                                 
                         self.email_controller.send_maintenance_email(self.file_controller.conf_file['maintenance'],device['name'])
                     else:
-                        if (device['last reminder']-(datetime.datetime.now())).days >=7:
+                        last_reminder = datetime.datetime.strptime(device['last reminder'], '%Y-%m-%d %H:%M:%S')
+                        if (last_reminder-(datetime.datetime.now())).days >=7:
+                            print("OK")
                             self.email_controller.send_maintenance_email(self.file_controller.conf_file['maintenance'],device['name'])
                     device['last reminder']=str(datetime.datetime.now().replace(microsecond=0))
                     self.file_controller.updateConf()
                     self.file_controller.loadConf()
-        except:
-            print("Unset reciver")
+                    print("Okeeeeey")
+        except Exception as e:
+            print(f"Error in Chech reminder{e}")
+
         self.gui_app.after(300000,self.check_reminder)
 
     def update_Screen(self):
