@@ -25,6 +25,7 @@ class MainApp:
         self.gui_app.grid_rowconfigure((1), weight=1)
         self.current_screen = ''
         self.def_font = CTkFont(family="Inter",size=20)
+        self.isStoped=False
         
         self.file_controller = FileLoadController()
         self.recovery_controller = RecoveryController(self)
@@ -69,7 +70,6 @@ class MainApp:
         self.check_connection()
         self.check_main_flow()
         self.check_reminder()
-        self.isStoped=False
 
     def changeToNetworkScreen(self):
         self.current_screen = 'network'

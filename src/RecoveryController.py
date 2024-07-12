@@ -69,10 +69,7 @@ class RecoveryController:
                 if not self.file["compleated"] and self.file['last program']!=None:
                     print("Recovering")
                     self.host.state_screen.current_program = self.host.file_controller.getProgram(self.file['last program'])
-                    if self.host.isConnected() and self.host.state_screen.current_program['interrupt']!= None:
-                        if self.host.state_screen.current_program["interrupt"] == True and self.host.state_screen.current_program ["responsible"] != None:
-                            self.host.email_controller.send_interruption_email(self.host.state_screen.current_program['name'],self.host.state_screen.current_program ["responsible"])
-                        # Not implemented: Register or advice of non set responsible
+                                            # Not implemented: Register or advice of non set responsible
                     self.host.state_screen.current_step_number = self.file['last step'] 
                     self.host.state_screen.output_state1 = self.file['output1']
                     self.host.state_screen.output_state2 = self.file['output2']
@@ -85,6 +82,9 @@ class RecoveryController:
                     try:
                         self.host.state_screen.changeCurrentProgram()
                         self.host.state_screen.run_current_program()
+                        if self.host.isConnected() and self.host.state_screen.current_program['interrupt']!= None:
+                            if self.host.state_screen.current_program["interrupt"] == True and self.host.state_screen.current_program ["responsible"] != None:
+                                self.host.email_controller.send_interruption_email(self.host.state_screen.current_program['name'],self.host.state_screen.current_program ["responsible"])
                     except:
                         print("Recovery is not posible")
                         self.host.state_screen.current_program = {'number': None, 'name': None, 'steps': None}

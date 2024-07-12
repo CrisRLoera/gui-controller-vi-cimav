@@ -62,9 +62,9 @@ class ControlFlow:
         self.output3_pin=21
         
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.output1_pin, GPIO.OUT, initial=GPIO.HIGH)
-        GPIO.setup(self.output2_pin, GPIO.OUT, initial=GPIO.HIGH)
-        GPIO.setup(self.output3_pin, GPIO.OUT, initial=GPIO.HIGH)
+        GPIO.setup(self.output1_pin, GPIO.OUT)
+        GPIO.setup(self.output2_pin, GPIO.OUT)
+        GPIO.setup(self.output3_pin, GPIO.OUT)
         self.stack = [None]
         self.host = host
         self.current = None
@@ -100,6 +100,9 @@ class ControlFlow:
             GPIO.output(self.output3_pin,GPIO.HIGH)
         else:
             GPIO.output(self.output3_pin,GPIO.LOW)
+        self.output1_on_time = datetime.datetime.now()
+        self.output2_on_time = datetime.datetime.now()
+        self.output3_on_time = datetime.datetime.now()
 
     def checkCurrentFlow(self, step):
             if self.host.state_screen.program_steps[step]== None:
