@@ -33,6 +33,7 @@ class Device:
                     self.host.host.file_controller.conf_file['maintenance devices'][index]['last reminder'] = None
                     self.host.host.file_controller.updateConf()
                     self.host.host.file_controller.loadConf()
+                    self.host.get_devices()
         except:
             print("Device not found")
 
