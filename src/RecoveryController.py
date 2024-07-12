@@ -1,18 +1,11 @@
 import json
 import datetime
+import os
 
 class RecoveryController:
     def __init__ (self,host):
        self.host = host
        self.file = None
-
-    def checkClock(self,time):
-        flag = None
-        self.get_recovery_file()
-        lastime = datetime.datetime.strptime(self.file['date'], "%Y-%m-%d %H:%M:%S")
-        current_time = datetime.datetime.now()
-        #print((current_time-lastime).total_seconds())
-        self.gen_recovery_file()
 
     def gen_recovery_file(self):
         current_time = datetime.datetime.now()
@@ -31,6 +24,8 @@ class RecoveryController:
                     "stack":self.host.state_controller.stack_save
             }
             json.dump(schema,file, indent=8)
+            file.flush()
+            os.fsync(file.fileno())
             #print(schema)
     def gen_empty_recovery_file(self):
         current_time = datetime.datetime.now()
@@ -82,6 +77,7 @@ class RecoveryController:
                     try:
                         self.host.state_screen.changeCurrentProgram()
                         self.host.state_screen.run_current_program()
+                        self.host.state_controller.restart_flow()
                         if self.host.isConnected() and self.host.state_screen.current_program['interrupt']!= None:
                             if self.host.state_screen.current_program["interrupt"] == True and self.host.state_screen.current_program ["responsible"] != None:
                                 self.host.email_controller.send_interruption_email(self.host.state_screen.current_program['name'],self.host.state_screen.current_program ["responsible"])

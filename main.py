@@ -98,12 +98,17 @@ class MainApp:
         self.isConnected()
         self.gui_app.after(5000, self.check_connection)
 
+    def save_state(self):
+        if self.state_screen.program_state:
+            self.recovery_controller.gen_recovery_file()
+            self.gui_app.after(60000,self.save_state)
+
     def check_main_flow(self):
         if self.state_screen.program_state:
             if self.isStoped:
                 self.state_controller.restart_flow()
                 self.isStoped=False
-            self.recovery_controller.checkClock(self.current_time)
+            self.save_state()
             self.state_controller.checkCurrentFlow(self.state_screen.current_step_number)
             self.state_controller.trackOutputs()
         else:
