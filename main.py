@@ -11,7 +11,7 @@ from src.network_module.EmailController import EmailController
 from src.config_module.ConfigurationGUI import ConfigurationGUI
 import nmcli
 from customtkinter import CTk, CTkLabel, CTkButton, CTkToplevel,CTkFrame,FontManager, CTkFont
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import datetime
 
 class MainApp:
@@ -19,7 +19,7 @@ class MainApp:
         self.gui_app = CTk()
         FontManager.load_font("./src/font/Inter.ttf")
         self.gui_app.geometry("800x480")
-#        self.gui_app.attributes("-fullscreen", True)
+        self.gui_app.attributes("-fullscreen", True)
         self.gui_app.grid_columnconfigure((0), weight=1)
         self.gui_app.grid_rowconfigure((0,2,3,4), weight=0)
         self.gui_app.grid_rowconfigure((1), weight=1)

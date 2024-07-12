@@ -63,7 +63,7 @@ class RecoveryController:
         self.get_recovery_file()
         lastime = datetime.datetime.strptime(self.file['date'], "%Y-%m-%d %H:%M:%S")
         current_time = datetime.datetime.now()
-        print(f'last time: {(current_time-lastime).total_seconds()}')
+        #print(f'last time: {(current_time-lastime).total_seconds()}')
         if (current_time - lastime).total_seconds() > limit_for_recovery:
             if self.file != None:
                 if not self.file["compleated"] and self.file['last program']!=None:

@@ -1,5 +1,5 @@
 import datetime
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 class SOAK:
     def __init__(self,time):
@@ -81,6 +81,26 @@ class ControlFlow:
 
         self.conf_file = self.host.file_controller.conf_file
 
+    def stop_flow(self):
+        GPIO.output(self.output1_pin,GPIO.LOW)
+        GPIO.output(self.output2_pin,GPIO.LOW)
+        GPIO.output(self.output3_pin,GPIO.LOW)
+
+
+    def restart_flow(self):
+        if self.output1:
+            GPIO.output(self.output1_pin,GPIO.HIGH)
+        else:
+            GPIO.output(self.output1_pin,GPIO.LOW)
+        if self.output2:
+            GPIO.output(self.output2_pin,GPIO.HIGH)
+        else:
+            GPIO.output(self.output2_pin,GPIO.LOW)
+        if self.output3:
+            GPIO.output(self.output3_pin,GPIO.HIGH)
+        else:
+            GPIO.output(self.output3_pin,GPIO.LOW)
+
     def checkCurrentFlow(self, step):
             if self.host.state_screen.program_steps[step]== None:
                 return 0
@@ -92,7 +112,6 @@ class ControlFlow:
                 if self.stack[self.task_num] == None:
                     self.stack[self.task_num] = SET(self.current["output1"],self.current["output2"],self.current["output3"],self)
                     self.stack[self.task_num].change()
-                    '''
                     if self.output1:
                         GPIO.output(self.output1_pin,GPIO.HIGH)
                     else:
@@ -105,7 +124,6 @@ class ControlFlow:
                         GPIO.output(self.output3_pin,GPIO.HIGH)
                     else:
                         GPIO.output(self.output3_pin,GPIO.LOW)
-                    '''
                     self.host.state_screen.current_step_number += 1
                     self.stack[self.task_num] = None
                     if self.host.isConnected() and self.host.state_screen.current_program['step change notify']!= None:
