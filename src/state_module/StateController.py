@@ -110,7 +110,7 @@ class ControlFlow:
                     self.stack[self.task_num] = None
                     if self.host.isConnected() and self.host.state_screen.current_program['step change notify']!= None:
                         if self.host.state_screen.current_program["step change notify"] == True and self.host.state_screen.current_program ["responsible"] != None:
-                            self.host.email_controller.send_step_change_email(self.host.state_screen.current_program["responsible"],"SET",step)
+                            self.host.email_controller.send_step_change_email(self.host.state_screen.current_program['name'],self.host.state_screen.current_program["responsible"],"SET",step)
             elif self.current["type"] == "SOAK":
                 isOver = False
                 if self.stack[self.task_num] == None:
@@ -126,7 +126,7 @@ class ControlFlow:
                     self.stack[self.task_num] = None
                     if self.host.isConnected() and self.host.state_screen.current_program['step change notify']!= None:
                         if self.host.state_screen.current_program["step change notify"] == True and self.host.state_screen.current_program ["responsible"] != None:
-                            self.host.email_controller.send_step_change_email(self.host.state_screen.current_program["responsible"],"SOAK",step)
+                            self.host.email_controller.send_step_change_email(self.host.state_screen.current_program['name'],self.host.state_screen.current_program["responsible"],"SOAK",step)
 
             elif self.current["type"] == "JUMP":
                 if (self.task_num - 1)>=0:
@@ -137,7 +137,7 @@ class ControlFlow:
                             self.stack[self.task_num]=None
                             if self.host.isConnected() and self.host.state_screen.current_program['step change notify']!= None:
                                 if self.host.state_screen.current_program["step change notify"] == True and self.host.state_screen.current_program ["responsible"] != None:
-                                    self.host.email_controller.send_step_change_email(self.host.state_screen.current_program["responsible"],"JUMP",step)
+                                    self.host.email_controller.send_step_change_email(self.host.state_screen.current_program['name'],self.host.state_screen.current_program["responsible"],"JUMP",step)
                         else:
                             self.stack[self.task_num].decrease()
                             self.host.state_screen.current_step_number = self.stack[self.task_num].step
@@ -173,7 +173,7 @@ class ControlFlow:
                     self.host.state_screen.program_state = False
                     if self.host.isConnected() and self.host.state_screen.current_program['end notify']!= None:
                         if self.host.state_screen.current_program["end notify"] == True and self.host.state_screen.current_program ["responsible"] != None:
-                            self.host.email_controller.send_program_finalize_email(self.host.state_screen.current_program ["responsible"],"PowerOFF")
+                            self.host.email_controller.send_program_finalize_email(self.host.state_screen.current_program['name'],self.host.state_screen.current_program ["responsible"],"PowerOFF")
                 elif self.stack[self.task_num].action == 'Restart':
                     self.host.state_screen.current_step_number = 0
                     self.stack = [None]
@@ -182,7 +182,7 @@ class ControlFlow:
                     self.stack_save = [None]
                     if self.host.isConnected() and self.host.state_screen.current_program['end notify']!= None:
                         if self.host.state_screen.current_program["end notify"] == True and self.host.state_screen.current_program ["responsible"] != None:
-                            self.host.email_controller.send_program_finalize_email(self.host.state_screen.current_program ["responsible"],"Restart")
+                            self.host.email_controller.send_program_finalize_email(self.host.state_screen.current_program['name'],self.host.state_screen.current_program ["responsible"],"Restart")
                 elif self.stack[self.task_num].action == 'SwitchProgram':
                     self.host.state_screen.current_program = self.host.file_controller.getProgram(self.current['program'])
                     self.host.state_screen.current_step_number = 0
@@ -195,7 +195,7 @@ class ControlFlow:
                     if self.host.isConnected() and self.host.state_screen.current_program['end notify']!= None:
                         if self.host.state_screen.current_program["end notify"] == True and self.host.state_screen.current_program ["responsible"] != None:
                             end_msg = "Switch Program to {self.current['program']}"
-                            self.host.email_controller.send_program_finalize_email(self.host.state_screen.current_program ["responsible"],end_msg)
+                            self.host.email_controller.send_program_finalize_email(self.host.state_screen.current_program['name'],self.host.state_screen.current_program ["responsible"],end_msg)
             
             if self.stack != None and self.stack != [None]: 
                 #print([name.type for name in self.stack if name != None])

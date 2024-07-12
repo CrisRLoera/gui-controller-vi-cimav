@@ -31,7 +31,7 @@ class RecoveryController:
                     "stack":self.host.state_controller.stack_save
             }
             json.dump(schema,file, indent=8)
-            print(schema)
+            #print(schema)
     def gen_empty_recovery_file(self):
         current_time = datetime.datetime.now()
         with open('./recovery.json', 'w') as file:
@@ -54,7 +54,7 @@ class RecoveryController:
         try:
             with open('./recovery.json', 'r') as file:
                 self.file = json.load(file)
-                print(self.file)
+                #print(self.file)
         except FileNotFoundError:
             self.gen_empty_recovery_file()
 
@@ -71,7 +71,7 @@ class RecoveryController:
                     self.host.state_screen.current_program = self.host.file_controller.getProgram(self.file['last program'])
                     if self.host.isConnected() and self.host.state_screen.current_program['interrupt']!= None:
                         if self.host.state_screen.current_program["interrupt"] == True and self.host.state_screen.current_program ["responsible"] != None:
-                            self.host.email_controller.send_interruption_email(self.host.state_screen.current_program ["responsible"])
+                            self.host.email_controller.send_interruption_email(self.host.state_screen.current_program['name'],self.host.state_screen.current_program ["responsible"])
                         # Not implemented: Register or advice of non set responsible
                     self.host.state_screen.current_step_number = self.file['last step'] 
                     self.host.state_screen.output_state1 = self.file['output1']
@@ -81,6 +81,7 @@ class RecoveryController:
                     self.host.state_screen.time_left = self.file['time left']
                     self.host.state_controller.task_num = self.file['task num']
                     self.host.state_controller.recoverTask(self.file['stack'])
+                    self.host.state_controller.changeOutputs(self.file['output1'],self.file['output2'],self.file['output3'])
                     try:
                         self.host.state_screen.changeCurrentProgram()
                         self.host.state_screen.run_current_program()
@@ -94,6 +95,11 @@ class RecoveryController:
                         self.host.state_screen.program_jumps_left = None
                         self.host.state_screen.time_left = None
                         self.host.state_controller.task_num = 0 
+                        self.state.current_step_number = 0
+                        self.host.state_controller.output1_on_time=None
+                        self.host.state_controller.output2_on_time=None
+                        self.host.state_controller.output3_on_time=None
+
                         self.stack = [None]
                         self.host.update_Screen()
 

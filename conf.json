@@ -1,6 +1,6 @@
 {
-        "creation_id": 28,
-        "maintenance": "",
+        "creation_id": 29,
+        "maintenance": "rcristianrubi@gmail.com",
         "host": "listas.cimav.edu.mx",
         "port": "25",
         "sender": "ivan@listas.cimav.edu.mx",
@@ -9,22 +9,22 @@
                         "name": "Banda",
                         "use limit": 100,
                         "output": "output1",
-                        "last reminder": "2024-07-10 18:04:33",
+                        "last reminder": "2024-07-11 11:23:13",
                         "output on time": 0
                 },
                 {
                         "name": "Buje",
                         "use limit": 200,
                         "output": "output2",
-                        "last reminder": "2024-07-10 18:04:34",
-                        "output on time": 0
+                        "last reminder": "2024-07-11 11:23:14",
+                        "output on time": 1
                 },
                 {
                         "name": "General",
                         "use limit": 450,
                         "output": "output2",
-                        "last reminder": "2024-07-10 18:04:35",
-                        "output on time": 0
+                        "last reminder": "2024-07-11 11:23:14",
+                        "output on time": 1
                 }
         ]
 }

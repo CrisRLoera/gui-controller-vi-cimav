@@ -76,6 +76,7 @@ class MainApp:
 
     def changeToConfScreen(self):
         self.current_screen = 'conf'
+        self.conf_screen.get_devices()
         self.update_Screen()
 
     def isConnected(self):

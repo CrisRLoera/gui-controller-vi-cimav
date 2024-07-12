@@ -116,6 +116,22 @@ class StateGUI:
         self.soak_time_left = None
         self.program_state = False
         self.current_step_number = 0
+        self.current_step_number = 0
+        self.current_program = {'number': None, 'name': None, 'steps': None}
+        self.current_step_number = None
+        self.output_state1 = False
+        self.output_state2 = False
+        self.output_state3 = False
+        self.program_jumps_left = None
+        self.time_left = None
+        self.program_jumps_left = None
+        self.soak_time_left = None
+        self.host.state_controller.task_num = 0 
+        self.host.state_controller.stack = [None]
+        self.host.state_controller.output1_on_time=None
+        self.host.state_controller.output2_on_time=None
+        self.host.state_controller.output3_on_time=None
+
         self.host.update_Screen()
 
 

@@ -29,7 +29,7 @@ class FileLoadController:
         base_path = os.path.abspath(os.path.dirname(__file__))
         path = os.path.join(base_path,'../conf.json')
         with open (path, "w") as file:
-            print(self.conf_file)
+            #print(self.conf_file)
             json.dump(self.conf_file,file, indent=8)
 
     def reload(self):

@@ -8,8 +8,8 @@ class EmailController:
         self.email_host = self.host.file_controller.conf_file["host"]
         self.port = self.host.file_controller.conf_file["port"]
 
-    def send_interruption_email(self,program_owner):
-        mailtext = "There has been an interruption in your program. Now is been restored and started."
+    def send_interruption_email(self,program_name,program_owner):
+        mailtext = "There has been an interruption in your program {program_name}. Now is been restored and started."
         msg = MIMEMultipart('alternative')
         msg['Subject'] = "Program interruption"
         msg['From'] = self.host.file_controller.conf_file["sender"]
@@ -25,8 +25,8 @@ class EmailController:
             print("No send email interruption")
         server.quit()
 
-    def send_step_change_email(self,program_owner,step_type,step_number):
-        mailtext = f"The step {step_type}-{step_number} has been completed sucesfully."
+    def send_step_change_email(self,program_name,program_owner,step_type,step_number):
+        mailtext = f"The step {step_type}, number:{step_number} in the program {program_name} has been completed sucesfully."
         msg = MIMEMultipart('alternative')
         msg['Subject'] = "Step change"
         msg['From'] = self.host.file_controller.conf_file["sender"]
@@ -43,8 +43,8 @@ class EmailController:
         server.quit()
 
 # mandar correo al finalizar
-    def send_program_finalize_email(self,program_owner,end_message):
-        mailtext = f"The program has ended with completion status - {end_message}."
+    def send_program_finalize_email(self,program_name,program_owner,end_message):
+        mailtext = f"The program {program_name} has ended with completion status - {end_message}."
         msg = MIMEMultipart('alternative')
         msg['Subject'] = "Program completed"
         msg['From'] = self.host.file_controller.conf_file["sender"]
@@ -67,7 +67,7 @@ class EmailController:
         mailtext = f"The {part} requires inspection and maintenance."
         msg = MIMEMultipart('alternative')
         msg['Subject'] = f"{part} maintenance"
-        msg['From'] = self.host.file_controller.conf_file["maintenance"]
+        msg['From'] = self.host.file_controller.conf_file["sender"]
         msg['To'] = maintenance
         # To create plain text mails
         part= MIMEText(mailtext, 'plain')
