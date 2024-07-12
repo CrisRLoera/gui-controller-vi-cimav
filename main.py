@@ -69,6 +69,7 @@ class MainApp:
         self.check_connection()
         self.check_main_flow()
         self.check_reminder()
+        self.isStoped=False
 
     def changeToNetworkScreen(self):
         self.current_screen = 'network'
@@ -99,9 +100,15 @@ class MainApp:
 
     def check_main_flow(self):
         if self.state_screen.program_state:
+            if self.isStoped:
+                self.state_controller.restart_flow()
+                self.isStoped=False
             self.recovery_controller.checkClock(self.current_time)
             self.state_controller.checkCurrentFlow(self.state_screen.current_step_number)
             self.state_controller.trackOutputs()
+        else:
+            self.state_controller.stop_flow()
+            self.isStoped = True
         self.current_time = datetime.datetime.now()
         self.update_hub()
         self.gui_app.after(1000, self.check_main_flow)
