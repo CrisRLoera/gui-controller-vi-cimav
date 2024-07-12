@@ -61,10 +61,10 @@ class ControlFlow:
         self.output2_pin=20
         self.output3_pin=21
         
-        #GPIO.setmode(GPIO.BCM)
-        #GPIO.setup(self.output1_pin, GPIO.OUT, initial=GPIO.HIGH)
-        #GPIO.setup(self.output2_pin, GPIO.OUT, initial=GPIO.HIGH)
-        #GPIO.setup(self.output3_pin, GPIO.OUT, initial=GPIO.HIGH)
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.output1_pin, GPIO.OUT, initial=GPIO.HIGH)
+        GPIO.setup(self.output2_pin, GPIO.OUT, initial=GPIO.HIGH)
+        GPIO.setup(self.output3_pin, GPIO.OUT, initial=GPIO.HIGH)
         self.stack = [None]
         self.host = host
         self.current = None

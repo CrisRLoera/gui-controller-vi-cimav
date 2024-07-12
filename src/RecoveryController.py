@@ -54,7 +54,7 @@ class RecoveryController:
         try:
             with open('./recovery.json', 'r') as file:
                 self.file = json.load(file)
-                #print(self.file)
+                print(self.file)
         except FileNotFoundError:
             self.gen_empty_recovery_file()
 

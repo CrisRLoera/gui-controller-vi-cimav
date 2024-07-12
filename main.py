@@ -177,6 +177,6 @@ if __name__ == "__main__":
         main.update_Screen()
         main.gui_app.mainloop()
     except:
-        #GPIO.cleanup()
+        GPIO.cleanup()
         pass
 
