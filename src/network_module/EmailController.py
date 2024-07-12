@@ -9,7 +9,7 @@ class EmailController:
         self.port = self.host.file_controller.conf_file["port"]
 
     def send_interruption_email(self,program_name,program_owner):
-        mailtext = "There has been an interruption in your program {program_name}. Now is been restored and started."
+        mailtext = f"There has been an interruption in your program {program_name}. Now is been restored and started."
         msg = MIMEMultipart('alternative')
         msg['Subject'] = "Program interruption"
         msg['From'] = self.host.file_controller.conf_file["sender"]
